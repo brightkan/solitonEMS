@@ -10,11 +10,7 @@
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal_add_new_employee">
       Add New Employee +
     </button>
-    <a href="{% url 'annual_calendar' %}">
-      <button type="button" class="btn btn-outline">
-        Leave Calendar
-      </button>
-    </a>
+
     <div class="col-md-12">
       <div class="card">
         <div class="card-body">
@@ -26,6 +22,7 @@
                 <th>Position</th>
                 <th>Department</th>
                 <th>Gender</th>
+                <th>Actions</th>
               </thead>
               <tbody>
                 {% for employee in employees  %}
@@ -36,11 +33,15 @@
                   <td>{{employee.organisationdetail.position}}</td>
                   <td>{{employee.organisationdetail.department.name}}</td>
                   <td>{{employee.gender}}</td>
-                  <td><a href="{% url 'edit_employee_page' employee.id %}" style="color:inherit"><i
-                        class="fa fa-edit"></i></a></td>
-                  <td><a href="{% url 'delete_employee' employee.id %}" style="color: inherit" ...
-                      onclick="return confirm('Are you sure you want to delete {{employee.first_name}} {{employee.last_name}}?')"><i
-                        class="fa fa-trash"></i></a></td>
+                  <td>
+                    <a href="{% url 'edit_employee_page' employee.id %}" style="color:inherit">
+                      <i class="fa fa-edit"></i>
+                    </a> |
+                    <a href="{% url 'delete_employee' employee.id %}" style="color: inherit" ...
+                      onclick="return confirm('Are you sure you want to delete {{employee.first_name}} {{employee.last_name}}?')">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -93,9 +94,10 @@
               </div>
               <div class="form-group">
                 <label for="sel1">Renumeration Currency:</label>
-                <select class="form-control" id="sel1" name="renumeration_currency" required>
-                  <option value=1>UGX</option>
-                  <option value=2>USD</option>
+                <select class="form-control" name="renumeration_currency" required>
+                  {%for currency in currencies%}
+                  <option value={{currency.id}}>{{currency.code}}</option>
+                  {%endfor%}
                 </select>
               </div>
               <div class="form-group">

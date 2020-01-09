@@ -2,8 +2,6 @@
 {% load humanize %}
 {%block page_title %}
 <span>
-    <a href="{%url 'dashboard_page'%}" style="color: inherit;"><i
-            class="material-icons">keyboard_backspace</i></a>
     <h2 class="animated fadeInDown">Settings</h2>
 </span>
 {%endblock%}
@@ -17,61 +15,43 @@
                         <h4 class="card-title ">Currency</h4>
                     </div>
                     <div class="card-body">
-                        <button class="btn-outline-danger" data-toggle="modal" data-target="#modal_add_spouse">Add a
+                        <button class="btn-outline-danger" data-toggle="modal" data-target="#modal_add_currency">Add a
                             currency
                         </button>
-                        {%if spouses%}
+                        {% if messages %}
+                            {% for message in messages %}
+                           <div class="alert alert-warning">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        {%if currencies%}
                         <div class="table-responsive">
                             <table class="table">
                                 <thead class="text-primary">
                                 <th>
-                                    Name
+                                    Code
                                 </th>
                                 <th>
-                                    National Id Number
+                                    Description
                                 </th>
                                 <th>
-                                    Date of Birth
+                                    Cost
                                 </th>
                                 <th>
-                                    Occupation
-                                </th>
-                                <th>
-                                    Telephone
-                                </th>
-
-                                <th>
-                                    Nationality
-                                </th>
-                                <th>
-                                    Passport Number
-                                </th>
-
-                                <th>
-                                    Alien Cerficate Number
-                                </th>
-
-                                <th>
-                                    Immigration File Number
+                                    Actions
                                 </th>
                                 </thead>
                                 <tbody>
-                                {%for spouse in spouses%}
+                                {%for currency in currencies%}
                                 <tr>
-                                    <td>{{spouse.name}}</td>
-                                    <td>{{spouse.national_id}}</td>
-                                    <td>{{spouse.dob}}</td>
-                                    <td>{{spouse.occupation}}</td>
-                                    <td>{{spouse.telephone}}</td>
-                                    <td>{{spouse.nationality}}</td>
-                                    <td>{{spouse.passport_number}}</td>
-                                    <td>{{spouse.alien_certificate_number}}</td>
-                                    <td>{{spouse.immigration_file_number}}</td>
-                                    <td><a href="{%url 'edit_spouse_page' spouse.id%}" style="color:inherit"><i
-                                            class="fa fa-edit"></i></a></td>
+                                    <td>{{currency.code}}</td>
+                                    <td>{{currency.desc}}</td>
+                                    <td>{{currency.cost}}</td>
                                     <td>
-                                        <a style="color: inherit" href="{%url 'delete_spouse' spouse.id%}"
-                                           onclick="return confirm('Are you sure you want to delete this spouse from {{employee.first_name}}?')">
+                                        <a href="{%url 'edit_currency_page' currency.id %}" style="color:inherit"><i
+                                                class="fa fa-edit"></i></a>
+                                    |
+                                        <a style="color: inherit" href="{%url 'delete_currency' currency.id%}"
+                                           onclick="return confirm('Are you sure you want to delete this currency from currencies?')">
                                             <i class="fa fa-trash"></i>
                                         </a>
                                     </td>
@@ -84,6 +64,46 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal Add a currency -->
+<div class="modal fade" id="modal_add_currency" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow-y: auto !important">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!--Header-->
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Add Currency</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <!--Body-->
+            <div class="modal-body">
+
+                <form method="POST" action="{%url 'add_currency'%}"> {%csrf_token%}
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Enter currency code"
+                               name="code" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Enter currency description"
+                               name="desc" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Enter currency cost"
+                               name="cost" required>
+                    </div>
+            <!--Footer-->
+            <div class="modal-footer">
+                <button class="btn btn-outline-danger" data-dismiss="modal" type="reset">Close</button>
+                <button class="btn btn-danger" type="submit">Save</button>
+            </div>
+            </form>
+
         </div>
     </div>
 </div>

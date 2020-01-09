@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from employees.services import create_employee_instance
 from ems_auth.decorators import ems_login_required
 from ems_auth.models import User
+from settings.selectors import get_all_currencies
 from .models import (
     Employee,
     HomeAddress,
@@ -48,32 +49,21 @@ def dashboard_page(request):
 
 @ems_login_required
 def employees_page(request):
-    # redirect according to roles
-    user = request.user
-
+    all_currencies = get_all_currencies()
     context = {
-        "user": user,
+        "user": request.user,
+        "currencies": all_currencies,
         "employees_page": "active",
         "employees": Employee.objects.all(),
     }
     return render(request, 'employees/employees.html', context)
 
 
-@login_required
+@ems_login_required
 def employee_page(request, id):
-    # The line requires the user to be authenticated before accessing the view responses.
-    if not request.user.is_authenticated:
-        # if the user is not authenticated it renders a login page
-        return render(request, 'ems_auth/login.html', {"message": None})
-
-    # redirect according to roles
-    # If user is a manager
-    user = request.user
-
     employee = Employee.objects.get(pk=id)
-
     context = {
-        "user": user,
+        "user": request.user,
         "employees_page": "active",
         "employee": employee,
         "certifications": employee.certification_set.all(),
@@ -332,8 +322,6 @@ def employee_team_page(request, id):
 
     employee = Employee.objects.get(pk=id)
     user = request.user
-    notifications = Notification.objects.filter(user=user.solitonuser, status='unread')
-    number_of_notifications = notifications.count()
     context = {
         "user": user,
         "employees_page": "active",
@@ -343,8 +331,6 @@ def employee_team_page(request, id):
         "beneficiaries": employee.beneficiary_set.all(),
         "spouses": employee.spouse_set.all(),
         "dependants": employee.dependant_set.all(),
-        "notifications": notifications,
-        "number_of_notifications": number_of_notifications
     }
 
 

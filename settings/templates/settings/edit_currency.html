@@ -1,0 +1,84 @@
+{%extends 'solitonems/base.html'%}
+{% load humanize %}
+{%block page_title %}
+<span>
+    <a href="{%url 'settings_page'%}" style="color: inherit;"><i
+            class="material-icons">keyboard_backspace</i></a>
+    <h2 class="animated fadeInDown">Edit Currency</h2>
+</span>
+{%endblock%}
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title ">Amend Currency</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post"> {%csrf_token%}
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Enter currency code"
+                                       name="code" value="{{currency.code}}"required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Enter currency description"
+                                       name="desc" value="{{currency.desc}}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Enter currency cost"
+                                       name="cost" value="{{currency.cost}}" required>
+                            </div>
+                            <input type="submit" class="btn btn-danger" value="Save">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal Add a currency -->
+<div class="modal fade" id="modal_add_currency" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow-y: auto !important">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <!--Header-->
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">Add Currency</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <!--Body-->
+            <div class="modal-body">
+
+                <form method="POST"> {%csrf_token%}
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Enter currency code"
+                               name="code" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Enter currency description"
+                               name="desc" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Enter currency cost"
+                               name="certification" required>
+                    </div>
+            </div>
+            <!--Footer-->
+            <div class="modal-footer">
+                <button class="btn btn-outline-danger" data-dismiss="modal" type="reset">Close</button>
+                <button class="btn btn-danger" type="submit">Save</button>
+            </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+{%endblock%}
