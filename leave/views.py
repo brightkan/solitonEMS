@@ -78,6 +78,7 @@ def leave_dashboard_page(request):
         print("ID: ", get_current_user(request,"id"))
         applications = LeaveApplication.objects.filter(supervisor_status="Pending",\
              team=get_current_user(request,"team")).order_by('apply_date')
+        print("Apps: ", applications)
     
     elif is_hod == 1:
         print("As HOD")
