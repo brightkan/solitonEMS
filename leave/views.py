@@ -70,27 +70,25 @@ def leave_dashboard_page(request):
     is_hod = Department.objects.filter(id=get_current_user(request,"dept"),\
          hod=get_current_user(request,"id")).count()
 
-    print("is Supervisor: ", is_team_supervisor)
+    
+    print("is HR: ", user.is_hr)
 
     if is_team_supervisor == 1:
-        print("As Supervisor")
-        print("Team: ", get_current_user(request,"team"))
-        print("ID: ", get_current_user(request,"id"))
+        print("sup")
         applications = LeaveApplication.objects.filter(supervisor_status="Pending",\
              team=get_current_user(request,"team")).order_by('apply_date')
-        print("Apps: ", applications)
-    
+        
     elif is_hod == 1:
-        print("As HOD")
+        print("hod")
         applications = LeaveApplication.objects.filter(hod_status="Pending", \
             supervisor_status="Approved", department=get_current_user(request, "team")) \
             .order_by('apply_date')
 
-    if user.is_hr:
-        print("As Hr")
-        applications = LeaveApplication.objects \
-            .filter(hr_status="Pending", supervisor_status="Approved", \
+    elif user.is_hr:
+        print("hr")
+        applications = LeaveApplication.objects.filter(hr_status="Pending", supervisor_status="Approved", \
                     hod_status="Approved").order_by('apply_date')
+        
     else:
         applications = ""
 
@@ -215,17 +213,33 @@ def apply_leave_page(request):
 
     employee = Employee.objects.filter(pk=get_current_user(request, "id"))
     leave_record = Leave_Records.objects.all()
-    employee_record = leave_record.get(employee=get_current_user(request, "id"), leave_year=date.today().year)
 
-    context = {
-        "leave_page": "active",
-        "apps": LeaveApplication.objects.filter(employee=get_current_user(request, "id")),
-        "l_types": Leave_Types.objects.all(),
-        "l_balance": employee_record.balance,
-        "gender": get_current_user(request, "gender")
-    }
+    no_record = False
 
-    return render(request, "leave/leave.html", context)
+    try:
+        employee_record = leave_record.get(employee=get_current_user(request, "id"),\
+             leave_year=date.today().year)             
+
+        balance = int(employee_record.entitlement) + int(employee_record.residue)
+        context = {
+            "leave_page": "active",
+            "apps": LeaveApplication.objects.filter(employee=get_current_user(request, "id")),
+            "l_types": Leave_Types.objects.all(),
+            "l_balance": employee_record.balance,
+            "entitlement": balance,
+            "gender": get_current_user(request, "gender")
+        }
+
+        return render(request, "leave/leave.html", context)
+    except:            
+        no_record = True
+        
+        context = {
+            "leave_page": "active",
+            "no_record": no_record
+        }
+        return render(request, "leave/leave.html", context)
+    
 
 
 @login_required
@@ -255,35 +269,40 @@ def apply_leave(request):
                 curr_balance = employee.leave_balance
                 new_balance = curr_balance - n_days
 
-            if n_days <= new_balance:
+                if n_days <= new_balance:
+                    leave_app = LeaveApplication(employee=employee, leave_type=l_type, \
+                    start_date=s_date, end_date=e_date, no_of_days=n_days, \
+                    balance=curr_balance, department=department, \
+                    team=team)
+
+                    leave_app.save()
+
+                    messages.success(request, 'Leave Request Sent Successfully')
+
+                else:
+                    messages.warning(request, \
+                        f'You have insufficient {l_type} leave Balance {n_days}') 
+                    
+                    return redirect('apply_leave_page')
+                               
+            else:
                 leave_app = LeaveApplication(employee=employee, leave_type=l_type, \
-                start_date=s_date, end_date=e_date, no_of_days=n_days, \
-                balance=curr_balance, department=department, \
-                team=team)
+                    start_date=s_date, end_date=e_date, no_of_days=n_days, \
+                    balance=0, department=department, team=team)
 
                 leave_app.save()
 
-                subject = 'New Leave Request'
-                from_mail = settings.EMAIL_HOST_USER
-                msg = 'You have a new leave request that requires your attention'
-                to_mails = [user.email, 'walusimbi96@gmail.com']
-
-                # send_mail(subject, msg, from_mail, to_mails,fail_silently=False)
-
                 messages.success(request, 'Leave Request Sent Successfully')
 
-                return redirect('apply_leave_page')
 
-            else:
-                messages.warning(request, f'You have insufficient {l_type} leave Balance {n_days}')
-                if str(user.solitonuser.soliton_role) == 'Employee':
-                    context = {
-                        "employee": user.solitonuser.employee,
-                        "employee_leave_page": 'active'
-                    }
-                    return render(request, "leave/leave.html", context)
-                else:
-                    return render(request, "leave/leave.html")
+            subject = 'New Leave Request'
+            from_mail = settings.EMAIL_HOST_USER
+            msg = 'You have a new leave request that requires your attention'
+            to_mails = [user.email, 'walusimbi96@gmail.com']
+
+            # send_mail(subject, msg, from_mail, to_mails,fail_silently=False)
+
+            return redirect('apply_leave_page')
 
         else:
             messages.warning(request, f'You cannot Request({n_days}) for more than the\
@@ -299,25 +318,29 @@ def approve_leave(request):
 
         l_type = Leave_Types.objects.get(pk=request.POST.get("ltype"))
         n_days = request.POST.get("ndays")
-        leave = LeaveApplication.objects.get(pk=request.POST["app_id"])
-        leave_record = Leave_Records.objects. \
-            filter(employee=employee, leave_year=date.today().year)
+
+        application_id = request.POST["app_id"]
+        leave = LeaveApplication.objects.get(pk=application_id)
+        
 
         is_supervisor = Team.objects.filter(id=get_current_user(request, "team"), \
-                                            supervisors=get_current_user(request, "id")).count()
+            supervisors=get_current_user(request, "id")).count()
 
         
         if is_supervisor == 1: 
-            print("User Id: ", get_current_user(request,"id"))
-            print("User Team: ", get_current_user(request,"team"))
             LeaveApplication.objects.filter(pk=leave.id).update(supervisor=get_current_user(request, "id"),
-                                                                supervisor_status="Approved", )
+            supervisor_status="Approved", )
 
         elif user.is_hod:
             LeaveApplication.objects.filter(pk=leave.id).update(hod=get_current_user(request, "id"),
                                                                 hod_status="Approved")
 
         elif user.is_hr:
+
+            employee_id = request.POST["emp_id"]
+            leave_record = Leave_Records.objects.get(employee=employee_id,\
+             leave_year=date.today().year)
+
             curr_balance = int(leave_record.balance)
             total_applied = int(leave_record.leave_applied)
             total_taken = int(leave_record.total_taken)
@@ -334,8 +357,10 @@ def approve_leave(request):
             LeaveApplication.objects.filter(pk=leave.id).update(hr=get_current_user(request, "id"),
                 hr_status="Approved", overall_status="Approved",balance=new_balance)
 
-            leave_record.update(leave_applied=total_applied, total_taken=total_taken, \
-                                balance=new_balance)
+            Leave_Records.objects.\
+                filter(employee=employee_id, leave_year=date.today().year).\
+                    update(leave_applied=total_applied, total_taken=total_taken, \
+                balance=new_balance)
         else:
             messages.warning(request, 'Leave Approval Failed')
             return redirect('leave_dashboard_page')

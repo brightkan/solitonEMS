@@ -38,7 +38,7 @@ class LeaveApplication(models.Model):
     balance = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{id} - {self.leave_type} - {employee.first_name}"
+        return f"{id} - {self.leave_type}"
     
 class Leave_Records(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)

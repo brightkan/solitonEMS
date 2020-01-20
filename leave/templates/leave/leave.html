@@ -23,11 +23,13 @@
                              {% endfor %}
                         {% endif %} 
                         
-                        <h2>Annual Balance: <b>{{ l_balance }} day(s)</b></h2>
+                        {% comment %} {% if no_record == true %}
+                            <h3>No Leave Record for your profile this Year. 
+                            Contact the HR for Further inquiries</h3>  
+                        {% else %}  {% endcomment %}
+                        <h2>Annual Balance: <b>{{ l_balance }}/{{entitlement}}</b></h2>
                         <button class="btn btn-outline-primary" data-toggle="modal" data-target="#modal_apply_leave">Apply Now</button>
-                       {% comment %} <a class="nav-link" href="{% url 'leave_planner' %}"> {% endcomment %}
-                        {% comment %} <button class="btn btn-outline-primary" >Leave Planner</button></a> {% endcomment %}
-                       <h3>Your Applications</h3>
+                        <h3>Your Applications</h3>
                         <table class="table">
                             <thead>
                                 <th>Date</th>
@@ -50,6 +52,7 @@
                             </tr>
                             {% endfor %}
                         </table>
+                        {% comment %} {% endif %} {% endcomment %}
                     </div>
 
                 </div>

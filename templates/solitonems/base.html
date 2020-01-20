@@ -19,6 +19,12 @@
     <!-- CSS Files -->
     <link rel="stylesheet" type="text/css" href="{% static 'assets/css/bootstrap.min.css' %}"/>
     <link href="{% static 'assets/css/material-dashboard.css' %}" rel="stylesheet"/>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 </head>
 
 <body class="">
@@ -39,8 +45,7 @@
             </center>
         </div>
 
-        <div class="sidebar-wrapper">
-            <ul class="nav">
+    <ul class="nav">
                 <li class="nav-item {{admin}}" data-toggle="popover-admin" title="Admin">
                     <a class="nav-link" href="#" >
                         <i class="material-icons">verified_user</i>
@@ -51,120 +56,116 @@
                         <a href="{%url 'view_users_page'%}" class="list-group-item">View Users</a>
                         <a href="#" class="list-group-item">Reports</a>
                     </ul>
-                </li>
+                </li>  
 
-                <li class="nav-item {{dashboard_page}}">
-                    <a class="nav-link" href="{% url 'dashboard_page' %}">
-                        <i class="material-icons">dashboard</i>
-                        <p>Dashboard</p>
-                    </a>
-                </li>
+      <li class="nav-item {{dashboard_page}}">
+          <a class="nav-link" href="{% url 'dashboard_page' %}">
+              <i class="material-icons">dashboard</i>
+              <p>Dashboard</p>
+          </a>
+      </li>
 
-                <li class="nav-item {{organisation_page}}" data-toggle="popover-organisation" title="Organisation">
-                    <a class="nav-link" href="#">
-                        <i class="material-icons">account_balance</i>
-                        <p>Organisation</p>
-                    </a>
-                    <ul id="popover-organisation" class="nav list-group" style="display: none">
-                        <a href="{%url 'job_titles_page'%}" class="list-group-item">Manage Job Titles</a>
-                        <a href="{%url 'departments_page'%}" class="list-group-item">Manage Departments</a>
-                    </ul>
-                </li>
+      <li class="nav-item {{organisation_page}}" data-toggle="popover-organisation" title="Organisation">
+          <a class="nav-link" href="#">
+              <i class="material-icons">account_balance</i>
+              <p>Organisation</p>
+          </a>
+          <ul id="popover-organisation" class="nav list-group" style="display: none">
+              <a href="{%url 'job_titles_page'%}" class="list-group-item">Manage Job Titles</a>
+              <a href="{%url 'departments_page'%}" class="list-group-item">Manage Departments</a>
+          </ul>
+      </li>
 
-                <li class="nav-item  {{ employees_page }}">
-                    <a class="nav-link" href="{% url 'employees_page' %}">
-                        <i class="material-icons">content_paste</i>
-                        <p>Employees</p>
-                    </a>
+      <li class="nav-item  {{ employees_page }}">
+          <a class="nav-link" href="{% url 'employees_page' %}">
+              <i class="material-icons">wc</i>
+              <p>Employees</p>
+          </a>
+      </li>
 
-                </li>
+      <li class="nav-item {{leave_page}}" data-toggle="popover-leave" title="Leave">
+        <a class="nav-link" href="#">
+          <i class="material-icons">event</i>
+          <p>Leave</p>
+        </a>
+        <ul id="popover-leave" class="nav list-group" style="display: none">
+          <a href="{%url 'apply_leave_page'%}" class="list-group-item">Apply leave</a>
+          <a href="{%url 'leave_dashboard_page'%}" class="list-group-item">Leave Applications</a>
+          <a href="{%url 'leave_records'%}" class="list-group-item">Leave Records</a>
+          <a href="{%url 'leave_types_page'%}" class="list-group-item">Manage leave types</a>
+        </ul>
+      </li>
 
-                <li class="nav-item  {{ leave_page }}" data-toggle="popover-leave" title="Leave" >
-                    <a class="nav-link" href="#">
-                        <i class="material-icons">event</i>
-                        <p>Leave</p>
-                    </a>
-                    <ul id="popover-leave" class="nav list-group" style="display: none">
-                        <a href="{%url 'leave_dashboard_page'%}" class="list-group-item">Leave Applications</a>
-                        <a href="{%url 'leave_types_page'%}" class="list-group-item">Manage leave types</a>
-                        <a href="{%url 'apply_leave_page'%}" class="list-group-item">Apply for leave</a>
-                        <a href="{%url 'leave_records'%}" class="list-group-item">Leave Records</a>
-                    </ul>
-                </li>
+      <li class="nav-item  {{ payroll_page }}" data-toggle="popover-payroll" title="Payroll" >
+        <a class="nav-link" href="#">
+          <i class="material-icons">library_books</i>
+          <p>Payroll</p>
+        </a>
+        <ul id="popover-payroll" class="nav list-group" style="display: none">
+          <a href="{%url 'manage_payroll_records_page'%}" class="list-group-item">Manage Payroll Records</a>
+          <a href="{%url 'view_payroll_records_page'%}" class="list-group-item">View Payroll Records</a>
+          <a href="{%url 'view_payslip_page' %}" class="list-group-item">View your payslip</a>
+        </ul>
+      </li>
 
-                <li class="nav-item  {{ payroll_page }}" data-toggle="popover-payroll" title="Payroll" >
-                    <a class="nav-link" href="#">
-                        <i class="material-icons">library_books</i>
-                        <p>Payroll</p>
-                    </a>
-                    <ul id="popover-payroll" class="nav list-group" style="display: none">
-                        <a href="{%url 'manage_payroll_records_page'%}" class="list-group-item">Manage Payroll Records</a>
-                        <a href="{%url 'view_payroll_records_page'%}" class="list-group-item">View Payroll Records</a>
-                        <a href="{%url 'view_payslip_page' %}" class="list-group-item">View your payslip</a>
-                    </ul>
-                </li>
+      <li class="nav-item {{overtime_page}}" data-toggle="popover-overtime" title="Overtime">
+        <a class="nav-link" href="#">
+          <i class="material-icons">hourglass_empty</i>
+          <p>Overtime</p>
+        </a>
+        <ul id="popover-overtime" class="nav list-group" style="display:none">
+          <a href="{%url 'approve_overtime_page'%}" class="list-group-item">Approve Overtime</a>
+          <a href="{%url 'apply_for_overtime_page'%}" class="list-group-item">Apply for overtime</a>
+          <a href="{%url 'overtime_applications_page'%}" class="list-group-item">View overtime applications</a>
+        </ul>
+      </li>
 
-                <li class="nav-item {{overtime_page}}" data-toggle="popover-overtime" title="Overtime">
-                    <a class="nav-link" href="#">
-                        <i class="material-icons">hourglass_empty</i>
-                        <p>Overtime</p>
-                    </a>
-                    <ul id="popover-overtime" class="nav list-group" style="display:none">
-                        <a href="{%url 'approve_overtime_page'%}" class="list-group-item">Approve Overtime</a>
-                        <a href="{%url 'apply_for_overtime_page'%}" class="list-group-item">Apply for overtime</a>
-                        <a href="{%url 'overtime_applications_page'%}" class="list-group-item">View overtime applications</a>
-                    </ul>
-                </li>
+      <li class="nav-item {{holidays_page}}">
+        <a class="nav-link" href="{% url 'holidays_page' %}">
+          <i class="material-icons">beach_access</i>
+          <p>Holidays</p>
+        </a>
+      </li>
 
-                <li class="nav-item {{holidays_page}}">
-                    <a class="nav-link" href="{% url 'holidays_page' %}">
-                        <i class="material-icons">beach_access</i>
-                        <p>Holidays</p>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="material-icons">people</i>
-                        <p>Recruitment</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="material-icons">assignment</i>
-                        <p>Contracts</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="material-icons">bookmarks</i>
-                        <p>Training</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="material-icons">book</i>
-                        <p>Learning and Development</p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="material-icons"></i>
-                        <p></p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="material-icons"></i>
-                        <p></p>
-                    </a>
-                </li>
-
-
-            </ul>
-        </div>
-    </div>
-
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="material-icons">people</i>
+                <p>Recruitment</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="material-icons">assignment</i>
+                <p>Contracts</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="material-icons">bookmarks</i>
+                <p>Training</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="material-icons">book</i>
+                <p>Learning and Development</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="material-icons"></i>
+                <p></p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">
+                <i class="material-icons"></i>
+                <p></p>
+            </a>
+        </li>
+    </ul>
+</div>
+ 
     <div class="main-panel">
         <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
@@ -271,6 +272,23 @@
         </footer>
     </div>
 </div>
+
+  {% comment %} <div class="pos-f-t">                          
+        <nav class="navbar navbar-danger {{ payroll_page }}"> 
+          <button class="navbar-toggler" type="button" data-toggle="collapsel" data-target="#navbarTogglePayroll" aria-controls="navbarTogglePayroll" aria-expanded="false" aria-label="Toggle Payroll">
+            <i class="material-icons">library_books</i>
+            <p>Payroll</p>
+          </button>
+        </nav>
+        <div class="collapse" id="navbarTogglePayroll">
+          <div class="bg-light p-4">
+            <a href="{%url 'manage_payroll_records_page'%}" class="list-group-item">Manage Payroll Records</a>
+            <a href="{%url 'view_payroll_records_page'%}" class="list-group-item">View Payroll Records</a>
+            <a href="{%url 'view_payslip_page' %}" class="list-group-item">View your payslip</a>
+          </div>
+        </div>
+
+    </div>     {% endcomment %}
 
 <!--   Core JS Files   -->
 <script src="{% static 'assets/js/core/jquery.min.js' %}"></script>
