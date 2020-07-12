@@ -228,7 +228,7 @@ def generate_payslip_pdf(request, id):
         "year": payslip.payroll_record.year,
         "name_of_employee": "{} {}".format(payslip.employee.first_name, payslip.employee.last_name),
         "user": user,
-        "base_dir": BASE_DIR,
+        "base_dir": BASE_DIR
     }
 
     pdf = render_to_pdf('solitonems/payslip.html', context)

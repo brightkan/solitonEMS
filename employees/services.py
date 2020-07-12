@@ -39,8 +39,8 @@ def create_employee_instance(request):
     # Saving the employee instance
     employee.save()
 
-    add_leave_record(employee,start_date)
-    
+    add_leave_record(employee, start_date)
+
     return employee
 
 
@@ -48,6 +48,7 @@ def suspend(employee):
     employee.status = "Suspended"
     employee.save()
     return employee
+
 
 def add_leave_record(employee, start_date):
     date_format = "%Y-%m-%d"
@@ -61,22 +62,23 @@ def add_leave_record(employee, start_date):
     leave_days = 21
 
     if start_year == current_year:
-        if start_day>=15:
-            leave_days = (12-start_month)*1.75
+        if start_day >= 15:
+            leave_days = (12 - start_month) * 1.75
         else:
-            leave_days = (12-(start_month-1))*1.75
+            leave_days = (12 - (start_month - 1)) * 1.75
 
     leave_record = Leave_Records(
-        employee=employee, 
+        employee=employee,
         leave_year=current_year,
-        entitlement=leave_days, 
-        residue=0, 
-        leave_applied=0, 
+        entitlement=leave_days,
+        residue=0,
+        leave_applied=0,
         total_taken=0,
         balance=leave_days
-        )
+    )
 
     leave_record.save()
+
 
 def add_employee_contacts(request):
     if request.method == "POST":
@@ -87,5 +89,5 @@ def add_employee_contacts(request):
         employee = get_employee(employee_id)
 
         contact = Contact(contact_type=contact_type, contact=contacts, employee=employee)
-        
+
         employee.save()

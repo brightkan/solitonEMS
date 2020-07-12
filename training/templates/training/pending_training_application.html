@@ -1,0 +1,99 @@
+{%extends 'solitonems/base.html'%}
+
+{%block page_title %}
+Pending Training Application
+{%endblock%}
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <div class="card animated fadeInUp">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <th>ID</th>
+                        <th>{{training_application.id}}</th>
+                        <tr>
+                            <td>Applicant</td>
+                            <td>{{training_application.applicant}}</td>
+                        </tr>
+                        <tr>
+                            <td>Programme</td>
+                            <td>{{training_application.programme}}</td>
+                        </tr>
+                        <tr>
+                            <td>Institution</td>
+                            <td>{{training_application.institution}}</td>
+                        </tr>
+                        <tr>
+                            <td>Duration (Months)</td>
+                            <td>{{training_application.duration}}</td>
+                        </tr>
+                        <tr>
+                            <td>Cost</td>
+                            <td>{{training_application.currency}} {{training_application.cost}}</td>
+                        </tr>
+                        <tr>
+                            <td>Start Date</td>
+                            <td>{{training_application.start_date}}</td>
+                        </tr>
+                        <tr>
+                            <td>End Date</td>
+                            <td>{{training_application.end_date}}</td>
+                        </tr>
+                        <tr>
+                            <td>Objectives</td>
+                            <td>{{training_application.objectives}}</td>
+                        </tr>
+                        <tr>
+                            <td>Business Case</td>
+                            <td>{{training_application.business_case}}</td>
+                        </tr>
+                        <tr>
+                            <td>Preparations</td>
+                            <td>{{training_application.preparations}}</td>
+                        </tr>
+                        <tr>
+                            <td>Skills</td>
+                            <td>{{training_application.skills}}</td>
+                        </tr>
+                        <tr>
+                            <td>Knowledge</td>
+                            <td>{{training_application.knowledge}}</td>
+                        </tr>
+                        <tr>
+                            <td>Supervisor Approval</td>
+                            <td>{{training_application.supervisor_approval}}</td>
+                        </tr>
+                        <tr>
+                            <td>HOD Approval</td>
+                            <td>{{training_application.HOD_approval}}</td>
+                        </tr>
+                        <tr>
+                            <td>HR Approval</td>
+                            <td>{{training_application.HR_approval}}</td>
+                        </tr>
+                        <tr>
+                            <td>CFO Approval</td>
+                            <td>{{training_application.cfo_approval}}</td>
+                        </tr>
+                        <tr>
+                            <td>CEO Approval</td>
+                            <td>{{training_application.ceo_approval}}</td>
+                        </tr>
+                    </table>
+                </div>
+                <a href="{%url 'approve_training_application' training_application.id%}"
+                    onclick="return confirm('Are you sure you want to approve
+                    {{pending_application.applicant.first_name}}\'s training application?')">
+                    <button>Approve</button>
+                </a> |
+                <a href="{%url 'reject_training_application' training_application.id%}"
+                   onclick="return confirm('Are you sure you want to reject
+                                                               {{pending_application.applicant.first_name}}\'s training application?')">
+                    <button>Reject</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

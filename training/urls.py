@@ -11,6 +11,8 @@ urlpatterns = [
          name="delete_training_schedule"),
     path('training_schedules_page', views.training_schedules_page, name="training_schedules_page"),
     path('approve_training_page', views.approve_training_page, name="approve_training_page"),
+    path('pending_training_application_page/<int:training_application_id>', views.pending_training_application_page,
+         name="pending_training_application_page"),
     # Process
     path('reject_training_application/<int:training_application_id>', views.reject_training_application,
          name="reject_training_application"),

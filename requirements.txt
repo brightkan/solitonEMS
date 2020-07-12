@@ -2,8 +2,13 @@ django
 gunicorn
 django-heroku
 xhtml2pdf
+<<<<<<< HEAD
+django-sendgrid-v5
+python-decouple
+=======
 python-decouple==3.1
 django-dajaxice
 django-dajax
 django-javascript-settings
+>>>>>>> develop
 

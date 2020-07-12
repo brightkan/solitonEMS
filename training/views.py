@@ -8,11 +8,13 @@ from django.urls import reverse
 from ems_admin.decorators import log_activity
 from ems_auth.decorators import training_full_auth_required, hr_required
 from organisation_details.decorators import organisationdetail_required
+from overtime.selectors import get_supervisor_users
 from settings.selectors import get_all_currencies, get_currency
 from training.models import Training, TrainingSchedule
 from training.selectors import get_all_training_schedules, get_applicant_trainings, \
     get_training_schedule, get_pending_training_applications, get_training_application
-from training.services import approve_training_application_service, reject_training_application_service
+from training.services import approve_training_application_service, reject_training_application_service, \
+    send_training_application_mail
 
 
 @organisationdetail_required
@@ -34,7 +36,7 @@ def user_training_page(request):
         currency_id = request.POST.get('currency_id')
         currency = get_currency(currency_id)
 
-        Training.objects.create(
+        training_application = Training.objects.create(
             applicant=applicant,
             programme=programme,
             institution=institution,
@@ -49,6 +51,10 @@ def user_training_page(request):
             knowledge=knowledge,
             currency=currency
         )
+
+        approvers = get_supervisor_users(applicant)
+
+        send_training_application_mail(approvers, training_application)
 
         return HttpResponseRedirect(reverse(user_training_page))
 
@@ -173,3 +179,13 @@ def reject_training_application(request, training_application_id):
     else:
         messages.error(request, "You are not associated to any role on the system")
     return HttpResponseRedirect(reverse('approve_overtime_page'))
+
+
+def pending_training_application_page(request, training_application_id):
+    training_application = get_training_application(training_application_id)
+    context = {
+        "training_page": "active",
+        "training_application": training_application
+    }
+
+    return render(request, 'training/pending_training_application.html', context)
