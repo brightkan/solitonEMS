@@ -1,43 +1,40 @@
-from django.conf import settings
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.core.mail import send_mail
-from django.http import JsonResponse
-import json
-from django.contrib.auth.decorators import login_required
 import datetime
 from calendar import HTMLCalendar
 from collections import namedtuple
-from employees.models import Employee
-from django.db import connection
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db import connection, IntegrityError
+from django.http import JsonResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
+from django.urls import reverse
+
+from employees.models import Employee
+from ems_admin.decorators import log_activity
 from ems_auth.decorators import ems_login_required, hr_required
-from organisation_details.decorators import organisationdetail_required
-from organisation_details.models import (
-    Department,
-    Team)
-from .models import (
-    Leave_Types,
-    LeaveApplication,
-    annual_planner,
-    Leave_Records
-)
-from leave.services import send_leave_application_email, send_leave_response_email
+from holidays.models import Holiday
+from leave.decorators import leave_record_required
 from leave.selectors import (
     get_leave_type,
     get_supervisor_users,
     get_hod_users,
     get_hr_users,
     get_employee_leave_applications,
-    get_leave_record
-)
-from leave.decorators import leave_record_required
-
-from holidays.models import Holiday
-from ems_admin.decorators import log_activity
-from employees.selectors import get_employee
-from organisation_details.selectors import get_organisationdetail
+    get_leave_record,
+    get_recent_leave_plans, get_hod_pending_leave_plans, get_leave_plan, get_approved_leave_plans)
+from leave.services import send_leave_application_email, send_leave_response_email
 from notification.services import create_notification
+from organisation_details.decorators import organisationdetail_required
+from organisation_details.models import (
+    Department,
+    Team)
+from organisation_details.selectors import get_organisationdetail
+from .models import (
+    Leave_Types,
+    LeaveApplication,
+    annual_planner,
+    Leave_Records,
+    LeavePlan)
 
 
 @login_required
@@ -353,7 +350,7 @@ def check_leave_requirement(request, start_date, end_date):
     start_date = datetime.datetime.strptime(start_date, date_format)
     apply_date = datetime.datetime.strptime(datetime.date.today(), date_format)
 
-    difference = get_public_days(apply_date, start_date)
+    difference = get_number_of_days_without_public_holidays(apply_date, start_date)
 
     if difference < 7:
         messages.warning(request, \
@@ -482,6 +479,8 @@ def reject_leave(request):
         return JsonResponse({'success': True, 'redirect': "leave_dashboard_page"})
 
 
+@hr_required
+@ems_login_required
 def leave_records(request):
     if not request.user.is_authenticated:
         return render(request, "ems_auth/login.html", {"message": None})
@@ -568,37 +567,6 @@ def generate_years():
         i += 1
 
     return next_years
-
-
-def get_public_days(start_date, end_date):
-    date_format = "%Y-%m-%d"
-    from_date = start_date
-    to_date = datetime.strptime(end_date, date_format)
-
-    date_difference = to_date - from_date
-
-    all_days_between = (date_difference.days + 1)
-
-    # holidays = Holiday.objects.filter(holiday_date__range=(from_date, to_date)).count()
-
-    # Getting all holiday objects
-    holidays = Holiday.objects.all()
-
-    public_days = 0
-    k = 0
-    while k <= all_days_between:
-        check_date = from_date + datetime.timedelta(days=k)
-
-        is_holiday = holidays.filter(date=check_date.date()).exists()
-
-        if check_date.weekday() == 6 or is_holiday:
-            public_days += 1
-
-        k = k + 1
-
-    days_difference = all_days_between - public_days
-
-    return days_difference
 
 
 def get_end_date(request):
@@ -830,3 +798,104 @@ def leave_calendar(request, month=datetime.date.today().month, year=datetime.dat
         "calendar": cal
     }
     return render(request, 'leave/leave_calendar.html', context)
+
+
+@login_required
+@organisationdetail_required
+def create_leave_plan_page(request):
+    user = request.user
+    employee = user.solitonuser.employee
+
+    if request.POST:
+        start_date = request.POST.get("start_date")
+        end_date = request.POST.get("end_date")
+        description = request.POST.get("description")
+
+        try:
+            new_leave_plan = LeavePlan.objects.create(
+                employee=employee,
+                start_date=start_date,
+                end_date=end_date,
+                description=description
+            )
+        except IntegrityError:
+            return HttpResponseRedirect(reverse(create_leave_plan_page))
+
+    context = {
+        "leave_plans": "",
+        "leave_page": "active",
+        "recent_leave_plans": get_recent_leave_plans(5, employee),
+    }
+    return render(request, "leave/create_leave_plan.html", context)
+
+
+@login_required
+@organisationdetail_required
+def approve_leave_plan_page(request):
+    hod = request.user.solitonuser.employee
+    leave_plans = get_hod_pending_leave_plans(hod)
+    context = {
+        "leave_plans": leave_plans,
+        "leave_page": "active"
+    }
+    return render(request, "leave/approve_leave_plans.html", context)
+
+
+@login_required
+@organisationdetail_required
+def approve_leave_plan(request, id):
+    leave_plan = get_leave_plan(id=id)
+    leave_plan.approval_status = "Approved"
+    leave_plan.save()
+    messages.warning(request, f'Leave plan approved')
+    return HttpResponseRedirect(reverse(approve_leave_plan_page))
+
+
+@login_required
+@organisationdetail_required
+def reject_leave_plan(request, id):
+    leave_plan = get_leave_plan(id=id)
+    leave_plan.approval_status = "Rejected"
+    leave_plan.save()
+    messages.warning(request, f'Leave plan rejected')
+    return HttpResponseRedirect(reverse(approve_leave_plan_page))
+
+
+@login_required
+@organisationdetail_required
+def leave_plans_page(request):
+    hod = request.user.solitonuser.employee
+    current_month = datetime.datetime.today().month
+    approved_leave_plans = get_approved_leave_plans(hod, month=current_month)
+    context = {
+        "leave_plans": "",
+        "leave_page": "active",
+        "january": len(get_approved_leave_plans(hod, 1)),
+        "february": len(get_approved_leave_plans(hod, 2)),
+        "march": len(get_approved_leave_plans(hod, 3)),
+        "april": len(get_approved_leave_plans(hod, 4)),
+        "may": len(get_approved_leave_plans(hod, 5)),
+        "june": len(get_approved_leave_plans(hod, 6)),
+        "july": len(get_approved_leave_plans(hod, 7)),
+        "august": len(get_approved_leave_plans(hod, 8)),
+        "september": len(get_approved_leave_plans(hod, 9)),
+        "october": len(get_approved_leave_plans(hod, 10)),
+        "november": len(get_approved_leave_plans(hod, 11)),
+        "december": len(get_approved_leave_plans(hod, 12)),
+        "approved_leave_plans": approved_leave_plans,
+    }
+    return render(request, "leave/leave_plans.html", context)
+
+
+@login_required
+@organisationdetail_required
+def month_leave_plans_page(request, month_id):
+    hod = request.user.solitonuser.employee
+    leave_plans = get_approved_leave_plans(hod,month_id)
+    context = {
+        "leave_page": "active",
+        "leave_plans": leave_plans
+    }
+    return render(request, "leave/month_leave_plans.html", context)
+
+

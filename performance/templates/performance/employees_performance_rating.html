@@ -1,0 +1,102 @@
+{%extends 'solitonems/base.html'%}
+{% load humanize %}
+{% load static %}
+{%load performance_tags%}
+{% block page_title %}
+Employees Performance
+<script>
+$(document).ready(function(){
+  $("#search_input").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#employee-performance tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+{% endblock %}
+
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <div class="card animated fadeInUp">
+            <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {%if  employees%}
+                <h3>Employees</h3>
+                <div class="table-responsive">
+                    <div class="form-group ">
+                        <i class="fas fa-search " aria-hidden="true"></i>
+                        <input id="search_input" type="text" class="form-control" placeholder="Search....">
+                    </div>
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Performance Rating</th>
+                        </thead>
+                        <tbody id="employee-performance">
+                        {%for employee in employees%}
+                        <tr>
+                            <td>{{employee.id}}</td>
+                            <td>{{employee}}</td>
+                            <td>{{employee.organisationdetail.position}}</td>
+                            <td>{{employee.id | performance_rating_filter}}</td>
+                            <td>{{organisationdetail.position}}</td>
+                        </tr>
+                        {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+                {%else%}
+                <h3>No employees available</h3>
+                {%endif%}
+            </div>
+        </div>
+
+        <!-- Modal: modalApplyOvertime -->
+        <div class="modal fade" id="modal_apply_overtime" tabindex="-1" role="dialog"
+             aria-hidden="true" style="overflow-y: auto !important">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!-- Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Department KPI</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <!-- Body -->
+                    <div class="modal-body">
+                        <form method="post" action="#">
+                            {%csrf_token%}
+                            <div class="form-group">
+                                <label>Measure of Success</label>
+                                <textarea class="form-control" name="description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Weight</label>
+                                <input class="form-control" type="number" name="weight" value=0 required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Score</label>
+                                <input class="form-control" type="number" name="score" value=0 required/>
+                            </div>
+
+                            <input type="submit" value="submit" class="btn btn-danger"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

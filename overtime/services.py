@@ -34,7 +34,7 @@ def supervisor_approve(overtime_application):
     overtime_application.supervisor_approval = "Approved"
     overtime_application.save()
     approvers = get_hod_users(overtime_application.applicant)
-    send_overtime_application_mail(approvers, overtime_application)
+    # send_overtime_application_mail(approvers, overtime_application)
     return overtime_application
 
 
@@ -42,7 +42,7 @@ def hr_approve(overtime_application):
     overtime_application.HR_approval = "Approved"
     overtime_application.save()
     approvers = get_cfo_users()
-    send_overtime_application_mail(approvers, overtime_application)
+    # send_overtime_application_mail(approvers, overtime_application)
     return overtime_application
 
 
@@ -79,7 +79,7 @@ def hod_approve(overtime_application):
     overtime_application.HOD_approval = 'Approved'
     overtime_application.save()
     approvers = get_hr_users()
-    send_overtime_application_mail(approvers, overtime_application)
+    # send_overtime_application_mail(approvers, overtime_application)
     return overtime_application
 
 
@@ -88,7 +88,7 @@ def cfo_approve(overtime_application):
     overtime_application.cfo_approval = 'Approved'
     overtime_application.save()
     approvers = get_ceo_users()
-    send_overtime_application_mail(approvers, overtime_application)
+    # send_overtime_application_mail(approvers, overtime_application)
     return overtime_application
 
 
@@ -133,7 +133,7 @@ def reject_overtime_application_service(rejecter, overtime_application):
     else:
         rejected_overtime_application = None
 
-    send_overtime_application_approval_mail(rejected_overtime_application)
+    # send_overtime_application_approval_mail(rejected_overtime_application)
     return rejected_overtime_application
 
 
@@ -156,7 +156,7 @@ def approve_overtime_application_service(approver, overtime_application):
 
     if approver.is_ceo:
         approved_overtime_application = ceo_approve(overtime_application)
-        send_overtime_application_approval_mail(overtime_application)
+        # send_overtime_application_approval_mail(overtime_application)
 
     return approved_overtime_application
 

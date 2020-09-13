@@ -1,0 +1,90 @@
+{%extends 'solitonems/base.html'%}
+{% load humanize %}
+{% load static %}
+{% block page_title %}
+Employee Performance
+{% endblock %}
+
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <button class="btn btn-danger" data-toggle="modal"
+                data-target="#modal_apply_overtime">Create employee KPI</button>
+        <div class="card animated fadeInUp">
+            <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {%if employee_kpis%}
+                <h3>Employee Key Performance Indicators</h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <th>ID</th>
+                        <th>Measure of success</th>
+                        <th>Weight</th>
+                        <th>Score</th>
+                        <th>Actions</th>
+                        </thead>
+                        {%for employee_kpi in employee_kpis%}
+                        <tr>
+                            <td>{{employee_kpi.id}}</td>
+                            <td>{{employee_kpi.measure_of_success}}</td>
+                            <td>{{employee_kpi.weight}}</td>
+                            <td>{{employee_kpi.score}}</td>
+                            <td>
+                                <a href="{%url 'edit_employee_kpi_page' employee_kpi.id%}">Edit</a> |
+                                <a href="{%url 'delete_employee_kpi' employee_kpi.id%}">Delete</a></td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                </div>
+                {%else%}
+                <h3>No employee key performance indicators available</h3>
+                {%endif%}
+            </div>
+        </div>
+
+        <!-- Modal: modalApplyOvertime -->
+        <div class="modal fade" id="modal_apply_overtime" tabindex="-1" role="dialog"
+             aria-hidden="true" style="overflow-y: auto !important">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!-- Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Department KPI</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <!-- Body -->
+                    <div class="modal-body">
+                        <form method="post" action="#">
+                            {%csrf_token%}
+                            <div class="form-group">
+                                <label>Measure of success</label>
+                                <textarea class="form-control" name="description"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Weight</label>
+                                <input class="form-control" type="number" name="weight" value=0 required/>
+                            </div>
+                            <div class="form-group">
+                                <label>Score</label>
+                                <input class="form-control" type="number" name="score" value=0 required/>
+                            </div>
+
+                            <input type="submit" value="submit" class="btn btn-danger"/>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

@@ -1,0 +1,109 @@
+{% extends 'solitonems/base.html' %}
+{% block page_title %}
+Manage Penalties
+
+<script>
+$(document).ready(function(){
+  $("#search_input").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#penalties tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <!-- Button trigger modal-->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal_add_new_employee">
+            Add New Penalty +
+        </button>
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    {%if penalties%}
+                    <h3 style="text-align:center;">Penalties</h3>
+                    <hr>
+                    <div class="table-responsive">
+                        <div class="form-group ">
+                            <i class="fas fa-search " aria-hidden="true"></i>
+                            <input id="search_input" type="text" class="form-control" placeholder="Search....">
+                        </div>
+                        <table class="table table-hover">
+                            <thead class="thead-dark">
+                            <th>ID</th>
+                            <th>Penalty Name</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                            </thead>
+                            <tbody id="penalties">
+                            {% for penalty in penalties %}
+                            <tr>
+                                <td>{{penalty.id}}</td>
+                                <td>{{penalty.name}}</td>
+                                <td>{{penalty.description}}</td>
+                                <td><a href="{%url 'edit_penalty_page' penalty.id%}">Edit</a> |
+                                    <a href="{%url 'delete_penalty' penalty.id%}"
+                                       onclick="return confirm('Are you sure you want to delete {{penalty.name}}
+                                       penalty?')"
+                                    >Delete</a></td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {%else%}
+
+                    <h3>No active penalties available</h3>
+
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal: modalAddNew -->
+        <div class="modal fade" id="modal_add_new_employee" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLabel"
+             aria-hidden="true" style="overflow-y: auto !important">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Add New Penalty</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <!--Body-->
+                    <div class="modal-body">
+                        <form method="POST" action="#"> {%csrf_token%}
+
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Enter name"
+                                       name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea name="description" class="form-control"></textarea>
+                            </div>
+                    </div>
+                    <!--Footer-->
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-danger" type="reset">Close</button>
+                        <button class="btn btn-danger" type="submit">Save</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Modal: modalAddNewEmployee -->
+
+    </div>
+</div>
+{%endblock content%}

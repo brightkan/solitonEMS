@@ -1,0 +1,41 @@
+{% extends './base.html' %}
+{% block page_title %}
+Edit Salary Scale
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" action="{% url 'edit_salary_scale' %}"> {% csrf_token %}
+                        <div class="form-group">
+                            <label>Grade Level</label>
+                            <input type="text" class="form-control" placeholder="Grade Level"
+                                   name="grade_level" value="{{scale.level}}" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Minimum</label>
+                            <input type="text" class="form-control" placeholder="Minimum"
+                                   name="min_value" value={{scale.minimum}} required />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Maximum</label>
+                            <input type="text" class="form-control" name="max_value" 
+                            value="{{scale.maximum}}"/>
+                        </div>
+                        
+                        <input type="hidden" value={{scale.id}} name="scale_id">
+                        <button class="btn btn-danger" type="submit">Save</button>
+                        <a href="{%url 'manage_salary_scale_page'%}" class="btn btn-outline-danger">
+                            Back
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

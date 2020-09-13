@@ -1,7 +1,6 @@
 from django.db import models
 from employees.models import Employee
 
-
 # Create your models here.
 from settings.models import Currency
 
@@ -9,6 +8,10 @@ from settings.models import Currency
 class PayrollRecord(models.Model):
     year = models.CharField(max_length=20)
     month = models.CharField(max_length=20)
+    archived = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('year', 'month',)
 
     def __str__(self):
         return self.month + " " + self.year
@@ -27,15 +30,15 @@ class Payslip(models.Model):
     bonus = models.FloatField(default=0)
     sacco_deduction = models.FloatField()
     damage_deduction = models.FloatField()
+    salary_advance = models.FloatField()
+    police_fine = models.FloatField()
     prorate = models.CharField(max_length=20, default="0.0")
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, default="")
+    basic_salary = models.IntegerField(default=0)
+    currency_rate = models.IntegerField(default=0)
 
     def __str__(self):
         return self.employee.first_name + " " + self.employee.last_name
-
-    @property
-    def basic_salary(self):
-        return self.employee.basic_salary
 
     @property
     def total_statutory(self):
@@ -47,11 +50,8 @@ class Payslip(models.Model):
         currency = float(self.currency.cost)
         return paye * currency
 
-
     @property
     def nssf_ugx(self):
         nssf = self.total_nssf_contrib
         currency = float(self.currency.cost)
         return nssf * currency
-
-

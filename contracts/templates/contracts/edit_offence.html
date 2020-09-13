@@ -1,0 +1,59 @@
+{% extends 'solitonems/base.html' %}
+{% block page_title %}
+Edit Offence
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" action="#"> {%csrf_token%}
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Enter name"
+                                   name="name" value="{{offence.name}}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Employee:</label>
+                            <select class="form-control" name="employee" required>
+                                <option value="{{offence.employee.id}}">{{offence.employee}}</option>
+                                {%for employee in employees%}
+                                <option value={{employee.id}}>{{employee}}</option>
+                                {%endfor%}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Penalty:</label>
+                            <select class="form-control" name="penalty" required>
+                                <option value="{{offence.penalty.id}}">{{offence.penalty}}</option>
+                                {%for penalty in penalties%}
+                                <option value={{penalty.id}}>{{penalty}}</option>
+                                {%endfor%}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Resolved:</label>
+                            <select class="form-control" name="resolved" required>
+                                <option value="{{offence.resolved}}">{{offence.resolved}}</option>
+                                <option value="HR">HR</option>
+                                <option value="Disciplinary Committee">Disciplinary</option>
+                                <option value="Complainant">Complainant</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea class="form-control" value="{{offence.description}}"
+                                      name="description">{{offence.description}}</textarea>
+                        </div>
+                        <button class="btn btn-danger" type="submit">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{%endblock content%}

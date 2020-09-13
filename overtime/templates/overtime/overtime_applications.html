@@ -34,7 +34,8 @@ $(document).ready(function(){
                         <thead class="thead-dark">
                         <th>ID</th>
                         <th>Name</th>
-                        <th>Date</th>
+                        <th>Application Date</th>
+                        <th>Date of Work</th>
                         <th>Start Time</th>
                         <th>End Time</th>
                         <th>Description</th>
@@ -45,6 +46,7 @@ $(document).ready(function(){
                         <th>HOD Approval</th>
                         <th>CFO Approval</th>
                         <th>CEO Approval</th>
+                        <th>Actions</th>
                         </thead>
                         <tbody id="overtime_application">
                         {%for overtime_application in overtime_applications%}
@@ -54,6 +56,7 @@ $(document).ready(function(){
                                 {{overtime_application.applicant.last_name}}
                             </td>
                             <td>{{ overtime_application.date }}</td>
+                            <td>{{overtime_application.date_of_work}}</td>
                             <td>{{ overtime_application.start_time }}</td>
                             <td>{{ overtime_application.end_time }}</td>
                             <td>{{ overtime_application.description }}</td>
@@ -64,6 +67,10 @@ $(document).ready(function(){
                             <td>{{overtime_application.HOD_approval}}</td>
                             <td>{{overtime_application.cfo_approval}}</td>
                             <td>{{overtime_application.ceo_approval}}</td>
+                            <td>
+                                <a href="{%url 'delete_overtime_application' overtime_application.id%}" class="btn btn-outline-danger"
+                                >Delete</a>
+                            </td>
                         </tr>
                         {% endfor %}
                         </tbody>

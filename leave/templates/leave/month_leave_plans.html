@@ -1,0 +1,45 @@
+{%extends 'solitonems/base.html'%}
+{% load humanize %}
+{% load static %}
+{% block page_title %}
+Month Leave Plans
+{% endblock %}
+
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                {%if leave_plans%}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <th>ID</th>
+                        <th>Employee</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>No. of Days</th>
+                        <th>Description</th>
+                        <th>Approval Status</th>
+                        </thead>
+                        {%for leave_plan in leave_plans%}
+                        <tr>
+                            <td>{{leave_plan.id}}</td>
+                            <td>{{leave_plan.employee}}</td>
+                            <td>{{leave_plan.start_date}}</td>
+                            <td>{{leave_plan.end_date}}</td>
+                            <td>{{leave_plan.no_of_days}}</td>
+                            <td>{{leave_plan.description}}</td>
+                            <td>{{leave_plan.approval_status}}</td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                </div>
+                {%else%}
+                <h3>No Approved Leave Plans starting this month</h3>
+                {%endif%}
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

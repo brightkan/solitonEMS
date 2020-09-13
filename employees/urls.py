@@ -1,7 +1,5 @@
 from django.urls import path, reverse
 from . import views
-from django.contrib.auth import views as auth_views
-from django.conf.urls import url
 
 urlpatterns = [
     # Pages
@@ -44,6 +42,7 @@ urlpatterns = [
 
 
     path('add_deduction/', views.add_deduction, name="add_deduction"),
+    path('edit_deduction/', views.edit_deduction, name="edit_deduction"),
     path('add_allowance/', views.add_allowance, name="add_allowance"),
     path('add_supervisee/', views.add_supervisee, name="add_supervisee"),
     path('delete_superviser/<int:id>/', views.delete_supervisee, name="delete_supervisee"),
@@ -67,7 +66,7 @@ urlpatterns = [
 def javascript_settings():
     js_conf = {
         'add_employee_contacts': reverse('add_employee_contacts'),
-        'employee_page': reverse('employee_page'),
+        'delete_employee_contact': reverse('delete_employee_contact'),
     }
 
     return js_conf

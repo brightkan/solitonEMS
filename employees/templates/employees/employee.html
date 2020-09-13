@@ -1,4 +1,5 @@
 {% extends './base.html'%} {% load static %}
+{% load javascript_settings_tags %}
 {% block page_title %}
 {{employee.first_name}} {{employee.last_name}}
 {% endblock %}
@@ -8,6 +9,18 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-profile">
+                    <!-- Status Flash Messages -->
+                    {% if messages %}
+                    {% for msg in messages%}
+                    <div class="alert alert-{{ msg.tags }} alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                            &times;
+                        </button>
+                        {{ msg }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    <!-- End Status Flash messages-->
                     <div class="card-avatar">
                         <a href="#pablo">
                             {% if employee.gender == "Male" %}
@@ -123,11 +136,10 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Employee Contacts -->
                 <div class="card card-profile">
-                    <div class="card-header card-header-primary">
-                        <i class="material-icons" style="font-size: 3em; float:left; margin-right:20px">people</i>
+                    <div class="card-header">
                         <h4 class="card-title ">
                             Contacts</h4>
                     </div>
@@ -135,27 +147,27 @@
                         <div class="card-description">
                             <table class="table">
                                 {% for contact in contacts%}
-                                    <tr>
-                                        <td>
-                                            {% if contact.contact_type == "Email"%}
-                                                <i class="fa fa-envelope"></i>
-                                            {% elif contact.contact_type == "Phone"%}
-                                                <i class="fa fa-phone" aria-hidden="true"></i>
-                                            {% endif%}
-                                        </td>
-                                        <td>{{contact.contact}}</td>
-                                        <td>
-                                            {% comment %} <input type="hidden" name="contact_id" value={{contact.id}}> {% endcomment %}
-                                            <a id="id_contact" href="{% url 'delete_employee_contact' %}" data-id={{contact.id}} style="color:inherit">
-                                                <i id="remove_contact_btn" class="fa fa-times"></i>
-                                            </a> 
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>
+                                        {% if contact.contact_type == "Email"%}
+                                        <i class="fa fa-envelope"></i>
+                                        {% elif contact.contact_type == "Phone"%}
+                                        <i class="fa fa-phone" aria-hidden="true"></i>
+                                        {% endif%}
+                                    </td>
+                                    <td>{{contact.contact}}</td>
+                                    <td>
+                                        <input type="hidden" value={{contact.id}} id="contact_id">
+                                        <a href="" data-toggle="modal" data-target="#modal_delete_contact">
+                                            <i class="fa fa-times"></i>
+                                        </a>
+                                    </td>
+                                </tr>
                                 {% endfor%}
                                 <tr>
                                     <td colspan=2>
                                         <a href="#" class="btn btn-primary btn-round" data-toggle="modal"
-                                data-target="#modal_add_contact"> <i class="fa fa-plus"></i></a>
+                                           data-target="#modal_add_contact"> <i class="fa fa-plus"></i></a>
                                     </td>
                                 </tr>
                             </table>
@@ -163,6 +175,7 @@
                     </div>
                 </div>
                 <!-- End Employee Contacts-->
+
                 <div class="card card-profile">
                     <div class="card-body">
                         <h4 class="card-title">Bank Details</h4>
@@ -278,7 +291,7 @@
                                 <tr>
                                     <td colspan=2>
                                         <a href="#" class="btn btn-primary btn-round" data-toggle="modal"
-                               data-target="#modal_add_leave_details"> <i class="fa fa-edit"></i>Edit</a>
+                                           data-target="#modal_add_leave_details"> <i class="fa fa-edit"></i>Edit</a>
                                     </td>
                                 </tr>
                             </table>
@@ -700,10 +713,10 @@
                                     <td>{{deduction.name}}</td>
                                     <td>{{deduction.amount}}</td>
                                     <td>
+                                        <a href="{%url 'edit_deduction_page' deduction.id%}"><button class="btn btn-sm btn-primary">Edit</button></a> |
                                         <a href="{%url 'delete_deduction' deduction.id%}" style="color: inherit"
-                                           href=""
                                            onclick="return confirm('Are you sure you want to delete this deduction from {{employee.first_name}}?')">
-                                            <i class="fa fa-trash"></i>
+                                            <button class="btn btn-sm btn-danger">Delete</button>
                                         </a>
                                     </td>
                                 </tr>
@@ -785,8 +798,6 @@
                             </div>
 
                             <input type="hidden" name="employee_id" value={{employee.id}}>
-
-
                     </div>
                     <!--Footer-->
                     <div class="modal-footer">
@@ -821,6 +832,7 @@
                                 <select class="form-control" id="sel1" name="deduction_name" required>
                                     <option>Sacco</option>
                                     <option>Damage</option>
+                                    <option>Salary Advance</option>
                                     <option>Others</option>
                                 </select>
                             </div>
@@ -1219,7 +1231,7 @@
                                     <option value="{{employee.organisationdetail.department.id}}">
                                         {{employee.organisationdetail.department}}</option>
                                     {% for dep in deps %}
-                                        <option value="{{dep.pk}}">{{dep.name }}</option>
+                                    <option value="{{dep.pk}}">{{dep.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -1534,7 +1546,7 @@
                             <div class="form-group">
                                 <label>No. of Leaves: </label>
                                 <input type="text" class="form-control" placeholder="No. of Leaves"
-                                value="{{leave_record.leave_applied}}" name="no_of_leaves" required>
+                                       value="{{leave_record.leave_applied}}" name="no_of_leaves" required>
                             </div>
                             <div class="form-group">
                                 <label>Total Taken: </label>
@@ -1544,7 +1556,7 @@
                             <div class="form-group">
                                 <label>Balance: </label>
                                 <input type="text" class="form-control" placeholder="Balance:"
-                                    value="{{leave_record.balance}}" name="leave_balance" required>
+                                       value="{{leave_record.balance}}" name="leave_balance" required>
                             </div>
 
                             <input type="hidden" name="employee_id" value={{employee.id}}>
@@ -1556,26 +1568,26 @@
                             </div>
                         </form>
                         {% else%}
-                            <form method="POST" action="{% url 'edit_leave_details' %}"> {%csrf_token%}
+                        <form method="POST" action="{% url 'edit_leave_details' %}"> {%csrf_token%}
                             <div class="form-group">
                                 <input type="text" class="form-control" placeholder="Entitlement:" name="entitlement"
-                                     required>
+                                       required>
                             </div>
                             <div class="form-group">
                                 <input type="text" class="form-control" placeholder="Residue:"
-                                    name="residue" required>
+                                       name="residue" required>
                             </div>
                             <div class="form-group">
                                 <input type="text" class="form-control" placeholder="No. of Leaves:"
-                                    name="no_of_leaves" required>
+                                       name="no_of_leaves" required>
                             </div>
                             <div class="form-group">
                                 <input type="text" class="form-control" placeholder="Total Taken:"
-                                    name="total_taken" required>
+                                       name="total_taken" required>
                             </div>
                             <div class="form-group">
                                 <input type="text" class="form-control" placeholder="Balance:"
-                                    name="leave_balance" required>
+                                       name="leave_balance" required>
                             </div>
 
                             <input type="hidden" name="employee_id" value={{employee.id}}>
@@ -1585,11 +1597,11 @@
                                         type="reset">Close</button>
                                 <button class="btn btn-danger" type="submit">Save</button>
                             </div>
-                        </form> 
+                        </form>
                         {% endif%}
 
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -1608,7 +1620,8 @@
                     </div>
                     <!--Body-->
                     <div class="modal-body">
-                        <form method="POST" id="contact_form" action="{% url 'add_employee_contacts' %}"> 
+                        {% comment %} {% url 'add_employee_contacts' %} {% endcomment %}
+                        <form method="POST" id="contact_form" action="">
                             {%csrf_token%}
                             <div class="form-group">
                                 <label>Type: </label>
@@ -1622,14 +1635,14 @@
                                 <i class="fas fa-envelope prefix"></i>
                                 <input type="text" id="contact" name="contact" class="form-control" required>
                             </div>
-                            
+
                             <input type="hidden" name="employee_id" value={{employee.id}}>
                     </div>
                     <!--Footer-->
                     <div class="modal-footer">
                         <button class="btn btn-outline-danger" data-dismiss="modal" aria-label="Close"
                                 type="reset">Close</button>
-                        <button class="btn btn-danger" type="submit" id="contact_submit">Save</button>
+                        <button class="btn btn-danger" type="button" id="contact_submit">Save</button>
                     </div>
                     </form>
 
@@ -1637,9 +1650,38 @@
             </div>
         </div>
         <!-- End Contacts Modal-->
+
+        <!-- modal confirm Delete Contacts -->
+        <div class="modal fade" id="modal_delete_contact" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow-y: auto !important">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="modal_title">Delete Contact</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <!--Body-->
+                    <div class="modal-body">
+                        <p>Are you Sure you want to delete this Contact....!?
+                    </div>
+                    <!--Footer-->
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" data-dismiss="modal" aria-label="Close"
+                                type="reset">No</button>
+                        <button class="btn btn-success" type="button" id="contact_delete">Yes</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- End Delete Contact Modal-->
     </div>
 </div>
 
-
+<script src="{% static 'js/js.js' %}"></script>
+<script type="text/javascript">{% javascript_settings %}</script>
 
 {% endblock content %}

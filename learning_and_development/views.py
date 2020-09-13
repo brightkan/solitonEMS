@@ -5,14 +5,13 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from ems_admin.decorators import log_activity
-from ems_auth.decorators import learning_and_development_full_auth_required, hr_required
+from ems_auth.decorators import hr_required
 from learning_and_development.models import Resource
 from learning_and_development.selectors import get_all_resources, get_resource
 from organisation_details.selectors import get_all_departments, get_department
 
 
 @hr_required
-@learning_and_development_full_auth_required
 @log_activity
 def manage_resources_page(request):
     if request.POST and request.FILES:

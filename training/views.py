@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 
 from ems_admin.decorators import log_activity
-from ems_auth.decorators import training_full_auth_required, hr_required
+from ems_auth.decorators import hr_required
 from organisation_details.decorators import organisationdetail_required
 from overtime.selectors import get_supervisor_users
 from settings.selectors import get_all_currencies, get_currency
@@ -70,7 +70,6 @@ def user_training_page(request):
 
 
 @hr_required
-@training_full_auth_required
 @log_activity
 def schedule_training_page(request):
     if request.POST:
@@ -99,6 +98,7 @@ def schedule_training_page(request):
     return render(request, 'training/schedule_training.html', context)
 
 
+@hr_required
 @log_activity
 def edit_training_schedule(request, training_schedule_id):
     if request.POST:
@@ -127,6 +127,7 @@ def edit_training_schedule(request, training_schedule_id):
     return render(request, "training/edit_training_schedule.html", context)
 
 
+@hr_required
 @log_activity
 def delete_training_schedule(request, training_schedule_id):
     training_schedule = get_training_schedule(training_schedule_id)
@@ -134,6 +135,7 @@ def delete_training_schedule(request, training_schedule_id):
     return HttpResponseRedirect(reverse(schedule_training_page))
 
 
+@hr_required
 @log_activity
 def training_schedules_page(request):
     training_schedules = get_all_training_schedules()
@@ -144,6 +146,7 @@ def training_schedules_page(request):
     return render(request, 'training/training_schedules.html', context)
 
 
+@hr_required
 @organisationdetail_required
 @log_activity
 def approve_training_page(request):

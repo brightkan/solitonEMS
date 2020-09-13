@@ -1,0 +1,28 @@
+{% extends 'solitonems/base.html' %}
+{% block page_title %}
+Edit Penalty
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" action="#"> {%csrf_token%}
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Enter name"
+                                   name="name" value="{{penalty.name}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea name="description" class="form-control">{{penalty.description}}</textarea>
+                        </div>
+                        <button class="btn btn-danger" type="submit">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock content%}

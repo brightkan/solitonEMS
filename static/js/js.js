@@ -108,7 +108,7 @@ $(document).ready(() => {
     })
 
     // Save Employee Contact
-    $("#submit_contact").click(() => {
+    $("#contact_submit").click(() => {
         var form_data = $("#contact_form").serialize();
         $.ajax({
             type: 'POST',
@@ -116,21 +116,21 @@ $(document).ready(() => {
             data: form_data,
             dataType: 'json',
             success: (data) => {
-                window.location.href = configuration['employees']['employee_page'];
+                location.reload();
             }
         });
     })
 
     // Delete Employee Contact
-    $("#remove_contact_btn").click(() => {
-        var contact_id = $("#id_contact").data('id')
+    $("#contact_delete").click(() => {
+        var contact_id = document.querySelector('#contact_id').value;
         $.ajax({
-            type: 'POST',
+            type: 'get',
             url: configuration['employees']['delete_employee_contact'],
             data: { "contact_id": contact_id },
             dataType: 'json',
             success: (data) => {
-                window.location.href = configuration['employees']['employee_page'];
+                location.reload();
             }
         });
     })

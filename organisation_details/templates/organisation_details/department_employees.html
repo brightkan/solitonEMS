@@ -1,0 +1,53 @@
+{% extends './base.html' %}
+{% load static %}
+{% block page_title %}
+{{department}} Employees
+<script>
+$(document).ready(function(){
+  $("#search_input").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#employee_list tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+  <div class="container-fluid">    
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+            {% if not employees %}
+                <h3>No Employees in this Department</h3>
+            {% else %}
+                <div class="table-responsive table-striped table-condensed">
+                    <div class="form-group "> 
+                    <i class="fas fa-search " aria-hidden="true"></i>
+                    <input id="search_input" type="text" class="form-control" placeholder="Search....">                      
+                    </div>
+                    <table class="table table-hover" id="types_tables">
+                    <thead class="thead">
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Team</th>
+                    <th>Position</th>
+                    </thead>
+                    <tbody id="employee_list">
+                    
+                    {% for employee in employees %}
+                    <tr>
+                        <td >{{ employee.employee.first_name }} {{ employee.employee.last_name }}</td>
+                        <td>{{employee.employee.gender}}</td>
+                        <td>{{employee.team}}</td>   
+                        <td>{{employee.position}}</td>                
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>            
+                </div>
+        </div>
+            {% endif %}
+{%endblock%}

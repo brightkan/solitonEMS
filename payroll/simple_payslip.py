@@ -1,5 +1,5 @@
 # Class for employee payroll
-from employees.models import Employee
+from employees.models import Employee, Deduction
 
 
 def convert_to_zero_if_none(value):
@@ -28,7 +28,7 @@ def calculate_paye(gross_salary, currency_cost) -> float:
         paye = 0
 
     elif 235000 < gross_salary_ugx < 335000:
-        paye = 0.1 * (gross_salary - (235000 / currency_cost)) + (10000/currency_cost)
+        paye = 0.1 * (gross_salary - (235000 / currency_cost)) + (10000 / currency_cost)
 
     elif 335000 < gross_salary_ugx < 410000:
         paye = 0.2 * (gross_salary - (335000 / currency_cost)) + (10000 / currency_cost)
@@ -45,21 +45,39 @@ def calculate_paye(gross_salary, currency_cost) -> float:
 
 
 def get_sacco_deduction_amount(employee):
-    deduction = employee.deduction_set.filter(name="Sacco").first()
-    if deduction:
-        sacco_deduction = convert_to_zero_if_none(deduction.amount)
-        return sacco_deduction
-    else:
-        return 0
+    try:
+        sacco_deduction = employee.deduction.sacco
+    except Deduction.DoesNotExist:
+        sacco_deduction = 0
+
+    return sacco_deduction
 
 
 def get_damage_deduction_amount(employee):
-    deduction = employee.deduction_set.filter(name="Damage").first()
-    if deduction:
-        damage_deduction = convert_to_zero_if_none(deduction.amount)
-        return damage_deduction
-    else:
-        return 0
+    try:
+        damage_deduction = employee.deduction.damage
+    except Deduction.DoesNotExist:
+        damage_deduction = 0
+
+    return damage_deduction
+
+
+def get_salary_advance_deduction_amount(employee):
+    try:
+        salary_advance_deduction = employee.deduction.salary_advance
+    except Deduction.DoesNotExist:
+        salary_advance_deduction = 0
+
+    return salary_advance_deduction
+
+
+def get_police_fine_deduction_amount(employee):
+    try:
+        police_fine_deduction = employee.deduction.police_fine
+    except Deduction.DoesNotExist:
+        police_fine_deduction = 0
+
+    return police_fine_deduction
 
 
 class SimplePayslip:
@@ -75,6 +93,8 @@ class SimplePayslip:
         self.paye = calculate_paye(self.gross_salary, self.currency_cost)
         self.sacco_deduction_amount = get_sacco_deduction_amount(employee)
         self.damage_deduction_amount = get_damage_deduction_amount(employee)
+        self.salary_advance_amount = get_salary_advance_deduction_amount(employee)
+        self.police_fine_amount = get_police_fine_deduction_amount(employee)
         self.total_deductions = self.total_statutory_deductions + self.total_non_statutory_deductions
         self.lunch_allowance = int(self.employee.lunch_allowance / self.currency_cost)
 

@@ -48,6 +48,7 @@ $(document).ready(function(){
                             <thead class="thead-dark">
                             <th>ID</th>
                             <th>Title</th>
+                            <th>Salary Grade</th>
                             <th>Capacity</th>
                             <th>Actions</th>
                             </thead>
@@ -56,6 +57,7 @@ $(document).ready(function(){
                             <tr>
                                 <td>{{ position.id }}</td>
                                 <td><a href="#" style="color: inherit">{{ position.name }}</a></td>
+                                <td>{{ position.salary_scale }}</td>
                                 <td>{{ position.number_of_slots }}</td>
                                 <td>
                                     <a href="{% url 'edit_job_position_page' position.id %}"
@@ -114,8 +116,13 @@ $(document).ready(function(){
                             </div>
 
                             <div class="form-group">
-                                <input type="number" class="form-control" placeholder="Job Salary"
-                                       name="salary" required>
+                                <label>Salary Grade</label>
+                                <select class="form-control" name="salary">
+                                    {% for scale in scales%}
+                                        <option value={{scale.id}}>
+                                            {{scale.level}}({{scale.minimum}} - {{scale.maximum}})</option>
+                                    {% endfor%}
+                                </select>
                             </div>
 
                             <div class="form-group">

@@ -14,11 +14,20 @@ class Department(models.Model):
         return self.name
 
 
+class SalaryScale(models.Model):
+    level = models.CharField(max_length=20, null=False, unique=True)
+    minimum = models.FloatField()
+    maximum = models.FloatField()
+
+    def __str__(self):
+        return self.level
+
+
 class Position(models.Model):
     name = models.CharField(max_length=45, unique=True)
     number_of_slots = models.IntegerField()
     type = models.CharField(max_length=20, default="Full Time")
-    salary = models.IntegerField(default=0)
+    salary_scale = models.ForeignKey(SalaryScale, on_delete=models.CASCADE, blank=True, null=False)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, blank=True)
     description = models.TextField(blank=True)
 

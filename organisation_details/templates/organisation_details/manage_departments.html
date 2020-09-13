@@ -56,7 +56,7 @@ $(document).ready(function(){
                             {% for department in departments %}
                             <tr>
                                 <td>{{ department.id }}</td>
-                                <td><a href="#" style="color: inherit">{{ department.name }}</a></td>
+                                <td><a href="{% url 'department_employees' department.id%}" style="color: inherit">{{ department.name }}</a></td>
                                 <td>{{ department.hod }}</td>
                                 <td>{{ department.status }}</td>
                                 <td>

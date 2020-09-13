@@ -27,3 +27,5 @@ def get_recent_notification(user):
         return notifications.order_by('-id')
     else:
         return []
+
+

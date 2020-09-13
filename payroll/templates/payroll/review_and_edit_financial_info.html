@@ -1,0 +1,66 @@
+{%extends 'solitonems/base.html'%}
+{%load custom_filter_tags%}
+{%block page_title %}
+Review and Edit Financial Information
+{%endblock%}
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    {%if employees%}
+                    <h3 style="text-align:center;">Review and Edit Financial Information</h3>
+                    <hr>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="employees">
+                            <thead class="thead-dark">
+                            <th>Name</th>
+                            <th>Currency</th>
+                            <th>Basic Salary</th>
+                            <th>Bonus</th>
+                            <th>Sacco Deduction</th>
+                            <th>Damage Deduction</th>
+                            <th>Actions</th>
+                            </thead>
+                            <tbody id="employee_table">
+                            {% for employee in employees  %}
+                            <tr>
+                                <td><a href="{% url 'employee_page' employee.id %}" style="color: inherit">{{employee.first_name}}
+                                    {{employee.last_name}}</a></td>
+                                <td>{{employee.currency}}</td>
+                                <td contenteditable="true" data-id="basicSalary-{{employee.id}}" data-old_value="{{employee.basic_salary}}">{{employee.basic_salary}}</td>
+                                <td contenteditable="true" data-id="bonus-{{employee.id}}" data-old_value="{{employee.bonus}}">{{employee.bonus}}</td>
+                                <td contenteditable="true" data-id="sacco-{{employee.id}}" data-old_value="{{employee.id | sacco_filter}}">{{employee.id | sacco_filter}}</td>
+                                <td contenteditable="true" data-id="damage-{{employee.id}}" data-old_value="{{employee.id | damage_filter}}">{{employee.id | damage_filter}}</td>
+                                <td>
+                                    <a id="save-btn" onclick="saveQuestionAnswer()" style="color:inherit" >
+                                        Save
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                        <script>
+                        function saveQuestionAnswer(){
+                         console.log("Heelo world)}
+                       </script>
+
+                        <a href="{%url 'employees_download' %}">
+                            <button class="btn btn-outline">Export CSV Report</button>
+                        </a>
+                    </div>
+
+                    {%else%}
+
+                    <h3>No active employees available</h3>
+
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%endblock content%}

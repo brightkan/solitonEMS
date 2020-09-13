@@ -1,5 +1,6 @@
 {%extends './base.html'%}
 {% load humanize %}
+{%load custom_filter_tags%}
 
 {%block page_title %}
 Payroll Records (USD)
@@ -41,49 +42,43 @@ $(document).ready(function(){
                 <h3>No USD payslips</h3>
                 {%else%}
                 <div class="table-responsive">
-                    <div class="form-group "> 
+                    <div class="form-group ">
                         <i class="fas fa-search " aria-hidden="true"></i>
-                        <input id="search_input" type="text" class="form-control" placeholder="Search....">                      
+                        <input id="search_input" type="text" class="form-control" placeholder="Search....">
                     </div>
                     <table class="table">
                         <thead class="thead-dark">
                         <th>Emp. ID</th>
                         <th>Name</th>
-                        <th>NSSF Contribution</th>
-                        <th>PAYE</th>
-                        <th>Gross Pay</th>
                         <th>Basic Pay</th>
-                        <th>Net Pay</th>
-                        <th>PAYE(UGX)</th>
+                        <th>Gross Pay</th>
                         <th>NSSF Contribution(UGX)</th>
+                        <th>PAYE(UGX)</th>
+                        <th>Net Pay</th>
                         <th>Actions</th>
                         </thead>
-                        <tbody id="payroll_usd_list"
+                        <tbody id="payroll_usd_list">
                         {%if usd_payslips%}
                         {%for payroll in usd_payslips%}
                         <tr>
                             <td>{{payroll.employee.id}}</td>
                             <td>{{payroll.employee}}</td>
-                            <td>{{payroll.employee.currency}} {{payroll.total_nssf_contrib | intcomma}}</td>
-                            <td>{{payroll.employee.currency}} {{ payroll.paye| intcomma}}</td>
-                            <td>{{payroll.employee.currency}} {{payroll.gross_salary | intcomma}}</td>
-                            <td>{{payroll.employee.currency}} {{payroll.employee.basic_salary | intcomma}}</td>
-                            <td>{{payroll.employee.currency}} {{payroll.net_salary | intcomma }}</td>
-                            <td>UGX {{payroll.paye_ugx | intcomma}}</td>
-                            <td>UGX {{payroll.nssf_ugx | intcomma}}</td>
+                            <td>{{payroll.currency}} {{payroll.basic_salary | currency_filter}}</td>
+                            <td>{{payroll.currency}} {{payroll.gross_salary | currency_filter}}</td>
+                            <td>UGX {{payroll.nssf_ugx | currency_filter}}</td>
+                            <td>UGX {{payroll.paye_ugx | currency_filter}}</td>
+                            <td>{{payroll.currency}} {{payroll.net_salary | currency_filter }}</td>
                             <td><a href="{%url 'payslip_page' payroll.id%}"
                                    style="color: inherit"><button>View Payslip</button></a></td>
                         </tr>
                         {%endfor%}
                         <tr>
                             <td colspan="2">Total</td>
-                            <td>USD {{total_nssf_contribution | intcomma}}</td>
-                            <td>USD {{total_paye | intcomma}}</td>
-                            <td>USD {{total_gross_pay | intcomma}}</td>
-                            <td>USD {{total_basic_pay | intcomma}}</td>
-                            <td>USD {{total_net_pay | intcomma}}</td>
-                            <td>UGX {{total_paye_ugx | intcomma}}</td>
-                            <td>UGX {{total_nssf_contribution_ugx | intcomma}}</td>
+                            <td>USD {{total_basic_pay | currency_filter}}</td>
+                            <td>USD {{total_gross_pay | currency_filter}}</td>
+                            <td>UGX {{total_nssf_contribution_ugx | currency_filter}}</td>
+                            <td>UGX {{total_paye_ugx | currency_filter}}</td>
+                            <td>USD {{total_net_pay | currency_filter}}</td>
                         </tr>
                         {%endif%}
                         </tbody>
@@ -91,6 +86,9 @@ $(document).ready(function(){
                 </div>
                 <a href="{%url 'payroll_download_usd' payroll_record.id %}">
                     <button class="btn btn-outline">Export Excel CSV</button>
+                </a>
+                <a href="{%url 'generate_payroll_usd_pdf' payroll_record.id %}">
+                    <button class="btn btn-outline">Export PDF</button>
                 </a>
             </div>
         </div>

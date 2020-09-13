@@ -1,0 +1,31 @@
+{%extends './base.html'%}
+{%block page_title %}
+Edit Deduction
+{%endblock page_title%}
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-body">
+                    <form method="POST" action="#"> {%csrf_token%}
+                        <div class="form-group">
+                            <label for="sel1">Name:</label>
+                            <select class="form-control" id="sel1" name="deduction_name" required>
+                                <option>{{deduction.name}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount:</label>
+                            <input type="number" class="form-control" name="deduction_amount"
+                                   value="{{deduction.amount}}" required>
+                        </div>
+                        <button class="btn btn-danger" type="submit">Save</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

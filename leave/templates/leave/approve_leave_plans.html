@@ -1,0 +1,79 @@
+{%extends 'solitonems/base.html'%}
+
+{%block page_title %}
+Approve Leave Plan
+
+<script>
+$(document).ready(function(){
+  $("#search_input").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#overtime_page tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+{%endblock%}
+
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <div class="card animated fadeInUp">
+            <div class="card-body">
+                {% if messages %}
+                {% for message in messages %}
+                <p{% if message.tags %} class="alert alert-warning {{ message.tags }}"{% endif %}>{{ message }}</p>
+                {% endfor %}
+                {% endif %}
+
+                {%if leave_plans %}
+                <h3>As HOD of {{request.user.solitonuser.employee.organisationdetail.department}} Department</h3>
+                <div class="table-responsive">
+                    <div class="form-group ">
+                        <i class="fas fa-search " aria-hidden="true"></i>
+                        <input id="search_input" type="text" class="form-control" placeholder="Search....">
+                    </div>
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Start time</th>
+                        <th>End time</th>
+                        <th>No. of days</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                        </thead>
+                        <tbody id="ovetime_page">
+                        {%for leave_plan in leave_plans %}
+                        <tr>
+                            <td>{{leave_plan.employee}}</td>
+                            <td>{{leave_plan.plan_date}}</td>
+                            <td>{{leave_plan.start_date}}</td>
+                            <td>{{leave_plan.end_date}}</td>
+                            <td>{{leave_plan.no_of_days}}</td>
+                            <td>{{leave_plan.description}}</td>
+                            <td>
+                                <a href="{%url 'approve_leave_plan' leave_plan.id %}"
+                                   onclick="return confirm('Are you sure you want to approve {{leave_plan.employee}} Leave Plan?')"
+                                >
+                                    <button>Approve</button>
+                                </a>
+                                |
+                                <a href="{%url 'reject_leave_plan' leave_plan.id %}"
+                                   onclick="return confirm('Are you sure you want to reject {{leave_plan.employee}} Leave Plan?')">
+                                    <button>Reject</button>
+                                </a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                    </table>
+                </div>
+                {%else%}
+                <h3>No Leave plans available</h3>
+                {%endif%}
+                <!--                End of tables-->
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <title>
-        SOLITON TELMEC EMS
+        SOLITON BAKOZI
     </title>
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no'
           name='viewport'/>
@@ -27,23 +27,18 @@
 <div class="wrapper ">
     <div class="sidebar" data-color="danger" data-background-color="white"
          data-image="{%static 'assets/img/sidebar-1.jpg'%}">
-        <!--
-          Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
-
-          Tip 2: you can also add an image using data-image tag
-      -->
         <div class="logo">
             <center>
                 <img src=" {% static 'registration/images/icons/logo.svg'  %} " style='width:50%' class="logo-normal"/>
                 <a href="#" class="simple-text logo-normal">
-                    SOLITON TELMEC EMS
+                    SOLITON BAKOZI
                 </a>
             </center>
         </div>
 
         <div class="sidebar-wrapper">
             <ul class="nav">
-              
+
                 <li class="nav-item {{admin}}" data-toggle="popover-admin" title="Admin">
                     <a class="nav-link" href="#" >
                         <i class="material-icons">verified_user</i>
@@ -55,13 +50,13 @@
                         <a href="{%url 'audit_trails'%}" class="list-group-item">Audit Trail</a>
                     </ul>
                 </li>
-              
+
                 <li class="nav-item {{dashboard_page}}">
                     <a class="nav-link" href="{% url 'dashboard_page' %}">
                         <i class="material-icons">dashboard</i>
                         <p>Dashboard</p>
                     </a>
-                </li>              
+                </li>
 
                 <li class="nav-item {{organisation_page}}" data-toggle="popover-organisation" title="Organisation">
                     <a class="nav-link" href="#">
@@ -69,6 +64,7 @@
                         <p>Organisation</p>
                     </a>
                     <ul id="popover-organisation" class="nav list-group" style="display: none">
+                        <a href="{%url 'manage_salary_scale_page'%}" class="list-group-item">Manage Salary Scale</a>
                         <a href="{%url 'manage_job_positions_page'%}" class="list-group-item">Manage Job Positions</a>
                         <a href="{%url 'manage_departments_page'%}" class="list-group-item">Manage Departments</a>
                         <a href="{%url 'manage_teams_page'%}" class="list-group-item">Manage Teams</a>
@@ -82,21 +78,23 @@
                     </a>
 
                 </li>
-              
+
                 <li class="nav-item  {{ leave_page }}" data-toggle="popover-leave" title="Leave" >
                     <a class="nav-link" href="#">
                         <i class="material-icons">event</i>
                         <p>Leave</p>
                     </a>
                     <ul id="popover-leave" class="nav list-group" style="display: none">
-                        <a href="{%url 'leave_dashboard_page'%}" class="list-group-item">Leave Applications</a>
+                        <a href="{%url 'leave_dashboard_page'%}" class="list-group-item">Approve Leave Applications</a>
                         <a href="{%url 'apply_leave_page'%}" class="list-group-item">Apply for leave</a>
-                        
-                          <a href="{%url 'leave_types_page'%}" class="list-group-item">Manage leave types</a>
-                          <a href="{%url 'leave_records'%}" class="list-group-item">Leave Records</a>
-                        
+                        <a href="{%url 'leave_types_page'%}" class="list-group-item">Manage leave types</a>
+                        <a href="{%url 'leave_records'%}" class="list-group-item">Leave Records</a>
+                        <a href="{%url 'create_leave_plan_page'%}" class="list-group-item">Create your leave plan</a>
+                        <a href="{%url 'approve_leave_plan_page'%}" class="list-group-item">Approve leave plans</a>
+                        <a href="{%url 'leave_plans_page'%}" class="list-group-item">View leave plans for your department</a>
+
                     </ul>
-                </li> 
+                </li>
                 <li class="nav-item  {{ payroll_page }}" data-toggle="popover-payroll" title="Payroll" >
                     <a class="nav-link" href="#">
                         <i class="material-icons">library_books</i>
@@ -130,6 +128,21 @@
                     </a>
                 </li>
 
+                <li class="nav-item {{performance_page}}" data-toggle="popover-performance"
+                    title="Performance Management">
+                    <a class="nav-link" href="#">
+                        <i class="material-icons">done_all</i>
+                        <p>Performance Management</p>
+                    </a>
+                    <ul id="popover-performance" class="nav list-group" style="display:none">
+                        <a href="{%url 'manage_department_kpi_page'%}" class="list-group-item">Manage Department KPI</a>
+                        <a href="{%url 'manage_employees_kpi_page'%}" class="list-group-item">Manage Employee KPI</a>
+                        <a href="{%url 'manage_your_kpi_page'%}" class="list-group-item">Manage your KPI</a>
+                        <a href="{%url 'employees_performance_ratings_page'%}" class="list-group-item">View Employee Performance Rating</a>
+                        <a href="{%url 'employee_performance_ratings_page'%}" class="list-group-item">View your performance Rating</a>
+                    </ul>
+                </li>
+
                 <li class="nav-item {{recruitment_page}}" data-toggle="popover-recruitment" title="Recruitment">
                     <a class="nav-link" href="#">
                         <i class="material-icons">people</i>
@@ -149,6 +162,9 @@
                     <ul id="popover-contracts" class="nav list-group" style="display:none">
                         <a href="{%url 'manage_job_contracts'%}" class="list-group-item">Manage Job Contracts</a>
                         <a href="{%url 'user_contracts_page'%}" class="list-group-item">View User Contracts</a>
+                        <a href="{%url 'manage_offences_page'%}" class="list-group-item">Manage Offences</a>
+                        <a href="{%url 'manage_penalties_page'%}" class="list-group-item">Manage Penalties</a>
+                        <a href="{%url 'manage_terminations_page'%}" class="list-group-item">Manage Terminations</a>
                     </ul>
                 </li>
                 <li class="nav-item {{training_page}}" data-toggle="popover-training" title="Training">
@@ -158,7 +174,7 @@
                     </a>
                     <ul id="popover-training" class="nav list-group" style="display:none">
                         <a href="{%url 'approve_training_page'%}" class="list-group-item">Approve Training</a>
-                        <a href="{%url 'user_training_page'%}" class="list-group-item">User Training</a>
+                        <a href="{%url 'user_training_page'%}" class="list-group-item">Apply for Training</a>
                         <a href="{%url 'schedule_training_page'%}" class="list-group-item">Schedule Training</a>
                         <a href="{%url 'training_schedules_page'%}" class="list-group-item">Training Schedules</a>
                     </ul>
@@ -246,9 +262,13 @@
                                 </p>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-                                <center><h4 style="font-weight: bold">{{user.solitonuser.employee.position}}</h4></center>
-                                <a class="dropdown-item" href="#">{{user.solitonuser.employee.first_name}}
-                                    {{user.solitonuser.employee.last_name}}</a>
+                                <center>
+                                    <h4 style="font-weight: bold">{{user.solitonuser.employee.position}}</h4>
+                                </center>
+                                <a class="dropdown-item"
+                                   href="{%url 'employee_profile_page' user.solitonuser.employee.id %}">
+                                    {{user.solitonuser.employee}}
+                                </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="{%url 'settings_page'%}">Settings</a>
                                 <a class="dropdown-item" href="{% url 'logout' %}">Log out</a>
@@ -302,6 +322,11 @@
 <script src="{% static 'assets/js/core/popper.min.js' %}"></script>
 <script src="{% static 'assets/js/core/bootstrap-material-design.min.js'%}"></script>
 <script src="{% static 'assets/js/plugins/perfect-scrollbar.jquery.min.js'%}"></script>
+
+<!--Datatables code-->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
+
 <!-- Plugin for the momentJs  -->
 <script src="{% static 'assets/js/plugins/moment.min.js' %}"></script>
 <!--  Plugin for Sweet Alert -->
@@ -338,6 +363,8 @@
 <script src="{% static 'assets/js/plugins/bootstrap-notify.js' %}"></script>
 <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="{% static 'assets/js/material-dashboard.js' %}" type="text/javascript"></script>
+
+
 
 <script>
     $(document).ready(function() {
@@ -511,14 +538,6 @@
     });
 
 
-
-
-
-
-
-
-
-
 </script>
 <!--    Popovers-->
 <script>
@@ -575,6 +594,14 @@
           }
        });
 
+        $('[data-toggle="popover-performance"]').popover({
+            html: true,
+            trigger: 'click',
+            content: function() {
+            return $('#popover-performance').html();
+          }
+       });
+
        $('[data-toggle="popover-contracts"]').popover({
             html: true,
             trigger: 'click',
@@ -600,10 +627,14 @@
        });
 
     });
-
-
+</script>
+<!--Initialising datatables-->
+<script>
+    $(document).ready( function () {
+    $('#employees').DataTable();
+} );
 </script>
 
-</body>
 
+</body>
 </html>

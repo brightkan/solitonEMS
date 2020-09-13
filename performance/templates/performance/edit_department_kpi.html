@@ -1,0 +1,34 @@
+{% extends 'solitonems/base.html' %}
+{% block page_title %}
+Edit Department KPI
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" action="#">
+                        {%csrf_token%}
+                        <div class="form-group">
+                            <label>Measure of success</label>
+                            <textarea class="form-control" name="measure_of_success">{{department_kpi.measure_of_success}}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Weight</label>
+                            <input class="form-control" type="number" name="weight" value={{department_kpi.weight}} required/>
+                        </div>
+                        <div class="form-group">
+                            <label>Score</label>
+                            <input class="form-control" type="number" name="score" value={{department_kpi.score}} value=0 required/>
+                        </div>
+
+                        <input type="submit" value="submit" class="btn btn-danger"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock content%}

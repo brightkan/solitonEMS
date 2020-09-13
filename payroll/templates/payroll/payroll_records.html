@@ -23,15 +23,16 @@ $(document).ready(function(){
                 <div class="card-body">
                     {%if payroll_records%}
                     <div class="table-responsive">
-                        <div class="form-group "> 
-                        <i class="fas fa-search " aria-hidden="true"></i>
-                        <input id="search_input" type="text" class="form-control" placeholder="Search....">                      
-                    </div>
+                        <div class="form-group ">
+                            <i class="fas fa-search " aria-hidden="true"></i>
+                            <input id="search_input" type="text" class="form-control" placeholder="Search....">
+                        </div>
                         <table class="table">
                             <thead class="thead-dark">
                             <th>Payroll Record ID</th>
                             <th>Month</th>
                             <th>Year</th>
+                            <th>Archived</th>
                             <th>Actions</th>
                             </thead>
                             <tbody id="payroll_record_list">
@@ -40,7 +41,8 @@ $(document).ready(function(){
                                 <td>{{payroll_record.id}}</td>
                                 <td>{{payroll_record.month}}</td>
                                 <td>{{payroll_record.year}}</td>
-                                <td><a href="{%url 'payslips_page' payroll_record.id %}">
+                                <td>{{payroll_record.archived}}</td>
+                                <td><a href="{%url 'payroll_record_page' payroll_record.id%}">
                                     <button>View Payroll</button>
                                 </a></td>
                             </tr>

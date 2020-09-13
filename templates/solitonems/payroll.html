@@ -1,0 +1,128 @@
+{%load static %}
+{% load humanize %}
+{%load custom_filter_tags%}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Payroll PDF</title>
+    <style type="text/css">
+           @page {
+               size: letter landscape;
+               margin: 1cm;
+            }
+            body {
+				font-family: Arial, Helvetica, sans-serif;
+                font-weight: 200;
+                font-size: 14px;
+            }
+            .header {
+                text-align: left;
+            }
+            .title {
+                font-size: 22px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 20px 0px 20px;
+            }
+            .title span {
+                color: #007cae;
+            }
+            .details {
+                padding: 2px;
+                text-align: center !important;
+                font-size:0.9 em;
+                /*margin-left: 40%;*/
+            }
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+            }
+			.logo {
+				width:200px;
+			}
+			.bank-row,.financial-row,.personnel-row,.income-row, .total-row,.total-values-row,.income-values{
+				border: 1px solid #000;
+			}
+        </style>
+</head>
+<body>
+
+<div class='wrapper'>
+    <div class='header'>
+        <table>
+            <tr>
+                <td><img src="{{base_dir}}/templates/solitonems/logo.png"
+                         class="logo" alt="" /></td>
+                <td>
+                    <div>
+                        <ul style="list-style-type:None">
+                            <li>Bugolobi Plot 10, Mizindalo Road, Off Farady Road.</li>
+                            <li>Kampala Uganda</li>
+                            <li>P. O. Box 75725 Kampala,Uganda</li>
+                            <li>website: www.soliton.co.ke</li>
+                        </ul>
+                    </div>
+                </td>
+                <td>
+                    <ul style="list-style-type:None">
+                        <li>Mobile: +256756723473</li>
+                        <li>Mobile: +256200501624</li>
+                        <li>Office: +256200501600</li>
+                        <li>Office: +256700777003</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+</div>
+<h1>Payroll (UGX)</h1>
+<h2>{{month}} - {{year}}</h2>
+<div class='details' >
+    <!-- Table 6 columns-->
+    <br>
+    <table width="100%" border="1" >
+        <th>Payslip ID</th>
+        <th colspan="2">Name</th>
+        <th>Basic Pay</th>
+        <th>Gross Pay</th>
+        <th>NSSF Contribution</th>
+        <th>PAYE</th>
+        <th>Sacco</th>
+        <th>Net Pay</th>
+        {%for payslip in ugx_payslips%}
+        <tr>
+            <td>{{payslip.id}}</td>
+            <td colspan="2">{{payslip.employee}}</td>
+            <td>{{payslip.basic_salary| currency_filter}}</td>
+            <td>{{payslip.gross_salary| currency_filter}}</td>
+            <td>{{payslip.employee_nssf| currency_filter}}</td>
+            <td>{{payslip.paye| currency_filter}}</td>
+            <td>{{payslip.sacco_deduction | currency_filter}}</td>
+            <td>{{payslip.net_salary| currency_filter}}</td>
+        </tr>
+        {%endfor%}
+        <tr>
+            <td colspan="3">Total</td>
+            <td>{{total_basic_pay| currency_filter}}</td>
+            <td>{{total_gross_pay| currency_filter}}</td>
+            <td>{{total_nssf_contribution| currency_filter}}</td>
+            <td>{{total_paye| currency_filter}}</td>
+            <td>{{total_sacco| currency_filter}}</td>
+            <td>{{total_net_pay| currency_filter}}</td>
+        </tr>
+    </table>
+    <small>Generated with Soliton Bakozi on {% now "jS F Y" %}</small>
+    <h2>Prepared by: Human Resource Manager</h2>
+    <p>................................................................</p>
+    <h2>Approved by: Chief Financial Officer</h2>
+    <p>................................................................</p>
+    <h2>Approved by: Chief Executive Officer</h2>
+    <p>................................................................</p>
+</div>
+</div>
+</body>
+</html>

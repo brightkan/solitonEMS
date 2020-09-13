@@ -1,5 +1,6 @@
 {%extends './base.html'%}
 {% load humanize %}
+{%load custom_filter_tags%}
 {%block page_title %}
 {{name_of_employee}}
 {%endblock%}
@@ -24,57 +25,66 @@
                         <tr>
                             <th>Employee NSSF Contribution
                             </td>
-                            <td> {{payslip.employee.currency}} {{payslip.employee_nssf| intcomma }}</td>
+                            <td> {{payslip.currency}} {{payslip.employee_nssf| currency_filter}}</td>
                         </tr>
                         <tr>
                             <th>Employer NSSF Contribution
                             </td>
-                            <td> {{payslip.employee.currency}} {{payslip.employer_nssf | intcomma}}</td>
+                            <td> {{payslip.currency}} {{payslip.employer_nssf | currency_filter}}</td>
                         </tr>
                         <tr>
                             <th>Total NSSF Contribution
                             </td>
-                            <th> {{payslip.employee.currency}} {{payslip.total_nssf_contrib | intcomma}}</th>
+                            <th> {{payslip.currency}} {{payslip.total_nssf_contrib | currency_filter}}</th>
                         </tr>
                         <tr>
                             <th>PAYE
                             </td>
-                            <td> {{payslip.employee.currency}} {{payslip.paye | intcomma}}</td>
+                            <td> {{payslip.currency}} {{payslip.paye | currency_filter}}</td>
                         </tr>
                         <tr>
                             <th>Total Statutory Deductions
                             </td>
-                            <th> {{payslip.employee.currency}} {{payslip.total_statutory | intcomma}}</th>
+                            <th> {{payslip.currency}} {{payslip.total_statutory | currency_filter}}</th>
                         </tr>
                         <tr>
                             <th>Meal Allowance
                             </td>
-                            <td> {{payslip.employee.currency}} {{payslip.employee.lunch_allowance}}</td>
+                            <td> {{payslip.currency}} {{payslip.employee.lunch_allowance | currency_filter}}</td>
                         </tr>
                         <tr>
                             <th>Overtime
                             </td>
-                            <td> {{payslip.employee.currency}} {{payslip.overtime | intcomma}}</td>
+                            <td> {{payslip.currency}} {{payslip.overtime | currency_filter}}</td>
                         </tr>
                         <tr>
                             <th>Bonus
                             </td>
-                            <td> {{payslip.employee.currency}} {{payslip.bonus | intcomma}}</td>
+                            <td> {{payslip.currency}} {{payslip.bonus | currency_filter}}</td>
                         </tr>
                         <tr>
                             <th>Sacco Deduction
                             </td>
-                            <td> {{payslip.employee.currency}} {{payslip.sacco_deduction | intcomma}}</td>
+                            <td> {{payslip.currency}} {{payslip.sacco_deduction | currency_filter}}</td>
                         </tr>
                         <tr>
-                            <th>Damage Deduction
+                            <th>Damage Deduction </td>
+                            <td> {{payslip.currency}} {{payslip.damage_deduction | currency_filter}}</td>
+                        </tr>
+                        <tr>
+                            <th>Salary Advance </th>
+                            <td> {{payslip.currency}} {{payslip.salary_advance | currency_filter}}</td>
+                        </tr>
+                        <tr>
+                            <th>Police Fine</th>
+                            <td>
+                                {{payslip.currency}} {{payslip.police_fine | currency_filter}}
                             </td>
-                            <td> {{payslip.employee.currency}} {{payslip.damage_deduction | intcomma}}</td>
                         </tr>
                         <tr>
                             <th>Prorate
                             </td>
-                            <th> {{payslip.employee.currency}} {{payslip.prorate}}</th>
+                            <th> {{payslip.currency}} {{payslip.prorate}}</th>
                         </tr>
                         <tr>
                             <th></th>
@@ -82,17 +92,17 @@
                         <tr>
                             <th>BASIC SALARY
                             </td>
-                            <th> {{payslip.employee.currency}} {{payslip.employee.basic_salary | intcomma}}</th>
+                            <th> {{payslip.currency}} {{payslip.basic_salary | currency_filter}}</th>
                         </tr>
                         <tr>
                             <th>GROSS SALARY
                             </td>
-                            <th> {{payslip.employee.currency}} {{payslip.gross_salary | intcomma}}</th>
+                            <th> {{payslip.currency}} {{payslip.gross_salary | currency_filter}}</th>
                         </tr>
                         <tr>
                             <th>NET SALARY
                             </td>
-                            <th> {{payslip.employee.currency}} {{payslip.net_salary | intcomma}}</th>
+                            <th> {{payslip.currency}} {{payslip.net_salary | currency_filter}}</th>
                         </tr>
                     </table>
                 </div>

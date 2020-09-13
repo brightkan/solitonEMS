@@ -1,5 +1,6 @@
 {%load static %}
 {% load humanize %}
+{%load custom_filter_tags%}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -25,7 +26,8 @@
                 color: #007cae;
             }
             .details {
-                padding: 10px 20px 0px 20px;
+                padding-top: 5px;
+                padding-left: 2px;
                 text-align: left !important;
                 font-size:0.8em;
                 /*margin-left: 40%;*/
@@ -43,13 +45,9 @@
 			.bank-row,.financial-row,.personnel-row,.income-row, .total-row,.total-values-row,.income-values{
 				border: 1px solid #000;
 			}
-			
-               
-		
         </style>
 </head>
 <body>
-
 <div class='wrapper'>
 	<div class='header'>
 		<table>
@@ -76,7 +74,6 @@
 				</td>
 			</tr>
 		</table>
-
 	</div>
 </div>
 <h1>Payslip</h1>
@@ -94,10 +91,10 @@
 		</tr>
 		<tr class="financial-row">
 			<td><b>Financial Year:</b></td>
-			<td>2019/2020</td>
+			<td>{{year}}</td>
 			<td>Period: {{month}} - {{year}}</td>
 			<th colspan="2">Process Date: <br>{% now "jS F Y" %}</th>
-			<th>Currency: {{payslip.employee.currency}}</th>
+			<th>Currency: {{payslip.currency}}</th>
 		</tr>
 		<tr>
 			<td colspan="6"></td>
@@ -122,32 +119,32 @@
 		</tr>
 		<tr class="income-values">
 			<td colspan="2">Basic Salary</td>
-			<td>{{payslip.employee.basic_salary | intcomma}}</td>
+			<td>{{payslip.basic_salary | currency_filter}}</td>
 			<td colspan="2">P.A.Y.E</td>
-			<td>{{payslip.paye | intcomma}}</td>
+			<td>{{payslip.paye | currency_filter}}</td>
 		</tr>
 		<tr class="income-values">
 			<td colspan="2">Meal Allowance</td>
-			<td>{{payslip.employee.lunch_allowance| intcomma}}</td>
+			<td>{{payslip.employee.lunch_allowance| currency_filter}}</td>
 			<td colspan="2">N.S.S.F</td>
-			<td>{{payslip.employee_nssf| intcomma }}</td>
+			<td>{{payslip.employee_nssf| currency_filter }}</td>
 		</tr>
 		<tr class="income-values">
 			<td colspan="2">Overtime</td>
-			<td>{{payslip.overtime | intcomma}}</td>
+			<td>{{payslip.overtime | currency_filter}}</td>
 			<td colspan="2">Damage</td>
-			<td>{{payslip.damage_deduction | intcomma}}</td>
+			<td>{{payslip.damage_deduction | currency_filter}}</td>
 		</tr>
 		<tr class="income-values">
 			<td colspan="2">Bonus</td>
-			<td>{{payslip.bonus | intcomma}}</td>
+			<td>{{payslip.bonus | currency_filter}}</td>
 			<td colspan="2">Sacco</td>
-			<td>{{payslip.sacco_deduction | intcomma}}</td>
+			<td>{{payslip.sacco_deduction | currency_filter}}</td>
 		</tr>
 		<tr class="income-values">
 			<td colspan="3" style="border: none"></td>
 			<td colspan="2">Employer N.S.S.F</td>
-			<td>{{payslip.employer_nssf | intcomma}}</td>
+			<td>{{payslip.employer_nssf | currency_filter}}</td>
 		</tr>
 		<tr>
 			<td colspan="6"></td>
@@ -157,14 +154,14 @@
 			<th colspan="2">Total Taxable Income</th>
 			<th>Tax</th>
 			<th>Total Deductions</th>
-			<th>NET PAY</th>
+			<th>Net Pay</th>
 		</tr>
 		<tr class="total-values-row">
-			<td>{{payslip.gross_salary | intcomma}}</td>
-			<td colspan="2">{{payslip.gross_salary | intcomma}}</td>
-			<td>{{payslip.paye | intcomma}}</td>
-			<td>{{payslip.total_statutory | intcomma}}</td>
-			<td>{{payslip.net_salary | intcomma}}</td>
+			<td>{{payslip.gross_salary | currency_filter}}</td>
+			<td colspan="2">{{payslip.gross_salary | currency_filter}}</td>
+			<td>{{payslip.paye | currency_filter}}</td>
+			<td>{{payslip.total_statutory | currency_filter}}</td>
+			<td>{{payslip.net_salary | currency_filter}}</td>
 		</tr>
 		<tr>
 			<td colspan="6"></td>
@@ -173,12 +170,12 @@
 			<td colspan="6"></td>
 		</tr>
 		<tr>
-			<td colspan="3">Prepared by: {{user.solitonuser.employee.first_name}} {{user.solitonuser.employee.last_name}}</td>
+			<td colspan="3">Prepared by: Human Resource Manager</td>
 			<td colspan="3">Signature:..............................................</td>
 		</tr>
 
 	</table>
-	<small>Generated with Soliton EMS</small>
+	<small>Generated with Soliton Bakozi</small>
 </div>
 </div>
 </body>

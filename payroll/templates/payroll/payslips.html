@@ -1,6 +1,6 @@
 {%extends './base.html'%}
 {% load humanize %}
-
+{%load custom_filter_tags%}
 {%block page_title %}
 Payroll
 {%endblock%}
@@ -33,10 +33,10 @@ Payroll
                         <thead class="thead-dark">
                         <th>Emp. ID</th>
                         <th>Name</th>
+                        <th>Basic Pay</th>
+                        <th>Gross Pay</th>
                         <th>NSSF Contribution</th>
                         <th>PAYE</th>
-                        <th>Gross Pay</th>
-                        <th>Basic Pay</th>
                         <th>Net Pay</th>
                         <th>Actions</th>
                         </thead>
@@ -44,11 +44,11 @@ Payroll
                         <tr>
                             <td>{{payslip.employee.id}}</td>
                             <td>{{payslip.employee.first_name}} {{payslip.employee.last_name}}</td>
-                            <td>{{payslip.employee.currency}} {{payslip.total_nssf_contrib | intcomma}}</td>
-                            <td>{{payslip.employee.currency}} {{ payslip.paye| intcomma}}</td>
-                            <td>{{payslip.employee.currency}} {{payslip.gross_salary | intcomma}}</td>
-                            <td>{{payslip.employee.currency}} {{payslip.employee.basic_salary | intcomma}}</td>
-                            <td>{{payslip.employee.currency}} {{payslip.net_salary | intcomma }}</td>
+                            <td>{{payslip.currency}} {{payslip.basic_salary | currency_filter}}</td>
+                            <td>{{payslip.currency}} {{payslip.gross_salary | currency_filter}}</td>
+                            <td>{{payslip.currency}} {{payslip.total_nssf_contrib | currency_filter}}</td>
+                            <td>{{payslip.currency}} {{ payslip.paye| currency_filter}}</td>
+                            <td>{{payslip.currency}} {{payslip.net_salary | currency_filter }}</td>
                             <td><a href="{%url 'payslip_page' payslip.id%}"
                                    style="color: inherit"><button>View Payslip</button></a></td>
                         </tr>

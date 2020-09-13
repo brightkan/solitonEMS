@@ -1,19 +1,20 @@
 from datetime import date
 
-from django.shortcuts import render, redirect
+from django.db import IntegrityError
+from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.http import JsonResponse
 
-from employees.services import create_employee_instance, suspend, add_employee_contacts
+from employees.services import create_employee_instance, suspend, update_deduction
 from ems_admin.decorators import log_activity
-from ems_auth.decorators import ems_login_required, hr_required, first_login, employees_full_auth_required
+from ems_auth.decorators import ems_login_required, hr_required, first_login
 from ems_auth.models import User
 from organisation_details.models import Department, Position, Team, OrganisationDetail
 from organisation_details.selectors import get_all_positions
-from settings.selectors import get_all_currencies, get_currency
+from settings.selectors import get_all_currencies
 from .models import (
     Employee,
     HomeAddress,
@@ -31,13 +32,9 @@ from leave.models import Leave_Records
 from settings.models import Currency
 import csv
 
-# dashboard
-
-from .selectors import get_employee, get_active_employees
 from notification.selectors import get_user_notifications
 from .selectors import get_employee, get_active_employees, get_passive_employees, get_employee_contacts, get_contact
 from leave.selectors import get_leave_record
-
 
 
 @ems_login_required
@@ -47,10 +44,8 @@ def dashboard_page(request):
     # Get the user
     user = request.user
     try:
-        number_of_employees = Employee.objects.all().count()
         notifications = get_user_notifications(user)
         number_of_notifications = notifications.count()
-
         active_employees = get_active_employees()
         suspend_employees = get_passive_employees()
         number_of_employees = active_employees.count()
@@ -59,7 +54,6 @@ def dashboard_page(request):
             "user": user,
             "dashboard_page": "active",
             "number_of_employees": number_of_employees,
-
             "notifications": notifications,
             "number_of_notifications": number_of_notifications,
             "number_of_suspended": suspend_employees.count(),
@@ -73,7 +67,6 @@ def dashboard_page(request):
 
 @ems_login_required
 @hr_required
-@employees_full_auth_required
 @log_activity
 def employees_page(request):
     all_currencies = get_all_currencies()
@@ -106,7 +99,6 @@ def employee_page(request, id):
         "beneficiaries": employee.beneficiary_set.all(),
         "spouses": employee.spouse_set.all(),
         "dependants": employee.dependant_set.all(),
-        "deductions": employee.deduction_set.all(),
         "deps": Department.objects.all(),
         "titles": Position.objects.all(),
         "teams": Team.objects.all(),
@@ -294,6 +286,7 @@ def edit_employee(request, id):
         employee.residence_address = request.POST['residence_address']
         employee.dob = request.POST['dob']
         currency_id = request.POST['renumeration_currency']
+        employee.bonus = request.POST['bonus']
         employee.currency = Currency.objects.get(pk=currency_id)
 
         employee.status = request.POST['status']
@@ -1044,24 +1037,60 @@ def delete_dependant(request, id):
 def add_deduction(request):
     if request.method == 'POST':
         # Fetching data from the add deductions' form
-        name = request.POST['deduction_name']
-        amount = request.POST['deduction_amount']
+        sacco = request.POST['sacco']
+        damage = request.POST['damage']
+        salary_advance = request.POST['salary_advance']
+        police_fine = request.POST['police_fine']
+
         employee_id = request.POST['employee_id']
         employee = Employee.objects.get(pk=employee_id)
 
-        # Creating instance of Deduction
-        deduction = Deduction(employee=employee, name=name, amount=amount)
+        try:
+            deduction = Deduction.objects.create(
+                employee=employee,
+                sacco=sacco,
+                damage=damage,
+                salary_advance=salary_advance,
+                police_fine=police_fine
+            )
+            messages.success(request, "Successfully added sacco deduction")
+            return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
 
-        # Saving the Deduction instance
-        deduction.save()
+        except IntegrityError:
+            messages.error(request, "Integrity problems while adding deduction")
+            return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
+
+    else:
         context = {
             "employees_page": "active",
-            "success_msg": "You have successfully added %s to the non statutory deductions" % (deduction.name),
-            "employee": employee
+            "failed_msg": "Failed! You performed a GET request"
         }
 
-        return render(request, 'employees/success.html', context)
+        return render(request, "employees/failed.html", context)
 
+
+@ems_login_required
+@log_activity
+def edit_deduction(request):
+    if request.POST:
+        try:
+            sacco = request.POST['sacco']
+            damage = request.POST['damage']
+            salary_advance = request.POST['salary_advance']
+            police_fine = request.POST['police_fine']
+            employee_id = request.POST['employee_id']
+            employee = Employee.objects.get(pk=employee_id)
+
+            deduction = update_deduction(employee=employee,
+                                         sacco=sacco,
+                                         damage=damage,
+                                         salary_advance=salary_advance,
+                                         police_fine=police_fine)
+            messages.success(request, "Deduction updated successfully")
+            return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
+        except IntegrityError:
+            messages.error(request, "Integrity problems while adding deduction")
+            return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
 
     else:
         context = {
@@ -1145,7 +1174,7 @@ def edit_leave_details(request):
         leave_record = get_leave_record(employee)
 
         if leave_record:
-            leave_record.entitlement=entitlement
+            leave_record.entitlement = entitlement
             leave_record.residue = residue
             leave_record.leave_applied = no_of_leaves
             leave_record.total_taken = total_taken
@@ -1154,13 +1183,13 @@ def edit_leave_details(request):
             leave_record.save()
         else:
             leave_record = Leave_Records(
-                employee=employee, 
-                leave_year=date.today().year, 
+                employee=employee,
+                leave_year=date.today().year,
                 entitlement=entitlement,
                 residue=residue, balance=balance,
-                leave_applied=no_of_leaves, 
+                leave_applied=no_of_leaves,
                 total_taken=total_taken
-                )
+            )
 
             leave_record.save()
 
@@ -1294,10 +1323,8 @@ def suspend_employee(request, employee_id):
     return HttpResponseRedirect(reverse('employees_page'))
 
 
-@log_activity
 def employee_profile_page(request, employee_id):
     employee = get_employee(employee_id)
-
     context = {
         "user": request.user,
         "employees_page": "active",
@@ -1320,7 +1347,6 @@ def add_more_details_page(request, employee_id):
         "beneficiaries": employee.beneficiary_set.all(),
         "spouses": employee.spouse_set.all(),
         "dependants": employee.dependant_set.all(),
-        "deductions": employee.deduction_set.all(),
         "deps": Department.objects.all(),
         "titles": Position.objects.all(),
         "teams": Team.objects.all(),
@@ -1352,6 +1378,7 @@ def activate_employee(request, employee_id):
     messages.success(request, "Employee activated")
     return HttpResponseRedirect(reverse('activate_employees_page'))
 
+
 @log_activity
 def add_employee_contacts(request):
     if request.method == "POST":
@@ -1362,22 +1389,20 @@ def add_employee_contacts(request):
         employee = get_employee(employee_id)
 
         contact = Contacts(contact_type=contact_type, contact=contacts, employee=employee)
-        
+
         contact.save()
 
         messages.success(request, "Employee Contact Info saved Successfully")
 
-        return JsonResponse({'success': True, 'redirect': "employee_page"})
+        return JsonResponse({'success': True})
+        # , 'redirect': "employee_page"
 
-@log_activity
+
 def delete_employee_contact(request):
-    if request.method == "POST":
-        employee = get_employee(employee_id)
+    contact_id = request.POST.get('contact_id')
+    contact = get_contact(contact_id)
+    contact.delete()
 
-        contact_id = request.POST.get('contact_id') 
-        contact = get_contact(contact_id)
-        contact.delete()
+    messages.success(request, 'Contact Deleted')
 
-        messages.success(request, 'Contact Deleted')
-
-        return JsonResponse({'success': True, 'redirect': "employee_page"})
+    return JsonResponse({'success': True})

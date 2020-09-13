@@ -1,0 +1,147 @@
+{% extends 'solitonems/base.html' %}
+{% block page_title %}
+Manage Offences
+
+<script>
+$(document).ready(function(){
+  $("#search_input").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#offences tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <!-- Button trigger modal-->
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal_add_new_employee">
+            Add New Offence +
+        </button>
+
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    {%if offences%}
+                    <h3 style="text-align:center;">Offences</h3>
+                    <hr>
+                    <div class="table-responsive">
+                        <div class="form-group ">
+                            <i class="fas fa-search " aria-hidden="true"></i>
+                            <input id="search_input" type="text" class="form-control" placeholder="Search....">
+                        </div>
+                        <table class="table table-hover">
+                            <thead class="thead-dark">
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Offence Name</th>
+                            <th>Resolved</th>
+                            <th>Penalty</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                            </thead>
+                            <tbody id="offences">
+                            {% for offence in offences %}
+                            <tr>
+                                <td>{{offence.id}}</td>
+                                <td>{{offence.employee}}</td>
+                                <td>{{offence.name}}</td>
+                                <td>{{offence.resolved}}</td>
+                                <td>{{offence.penalty}}</td>
+                                <td>{{offence.description}}</td>
+                                <td>{{offence.date}}</td>
+                                <td><a href="{%url 'edit_offence_page' offence.id%}" >Edit</a> |
+                                    <a href="{%url 'delete_offence' offence.id%}"
+                                       onclick="return confirm('Are you sure you want to delete {{offence.employee}}
+                                       offence?')">Delete</a></td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {%else%}
+
+                    <h3>No active offences available</h3>
+
+                    {%endif%}
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Modal: modalAddNewEmployee -->
+        <div class="modal fade" id="modal_add_new_employee" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLabel"
+             aria-hidden="true" style="overflow-y: auto !important">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Add New Offence</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <!--Body-->
+                    <div class="modal-body">
+                        <form method="POST" action="#" enctype="multipart/form-data"> {%csrf_token%}
+
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Enter name"
+                                       name="name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Employee:</label>
+                                <select class="form-control" name="employee" required>
+                                    <option>=== Select Employee ===</option>
+                                    {%for employee in employees%}
+                                    <option value={{employee.id}}>{{employee}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Penalty:</label>
+                                <select class="form-control" name="penalty" required>
+                                    <option>=== Select Penalty ===</option>
+                                    {%for penalty in penalties%}
+                                    <option value={{penalty.id}}>{{penalty}}</option>
+                                    {%endfor%}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Resolved:</label>
+                                <select class="form-control" name="resolved" required>
+                                    <option>=== Select Resolved with ===</option>
+                                    <option value="HR">HR</option>
+                                    <option value="Disciplinary Committee">Disciplinary</option>
+                                    <option value="Complainant">Complainant</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea class="form-control" name="description"></textarea>
+                            </div>
+
+                    </div>
+                    <!--Footer-->
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-danger" type="reset">Close</button>
+                        <button class="btn btn-danger" type="submit">Save</button>
+                    </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <!-- Modal: modalAddNewEmployee -->
+
+    </div>
+</div>
+{%endblock content%}

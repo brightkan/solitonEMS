@@ -1,4 +1,5 @@
 from django.db import models
+
 from settings.models import Currency
 
 
@@ -9,6 +10,7 @@ class Employee(models.Model):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     basic_salary = models.IntegerField(default=1000000)
+    bonus = models.IntegerField(default=0)
     grade = models.CharField(max_length=3, default="")
     gender = models.CharField(max_length=10)
     start_date = models.DateField()
@@ -49,7 +51,9 @@ class Employee(models.Model):
 
     @property
     def overtime_hourly_rate(self) -> float:
-        hourly_rate = (float(self.initial_gross_salary) / 26.0) / 8
+        """In policy they consider Gross salary in hourly rate.
+        In practice, they consider basic salary"""
+        hourly_rate = (float(self.basic_salary) / 26.0) / 8
         return hourly_rate
 
     def __str__(self):
@@ -57,10 +61,11 @@ class Employee(models.Model):
 
 
 class Contacts(models.Model):
-    contact_type = models.CharField(max_length=10,default="number")
-    contact = models.CharField(max_length=15,null=False)
-    employee = models.ForeignKey(Employee,on_delete=models.CASCADE)
-    
+    contact_type = models.CharField(max_length=10, default="number")
+    contact = models.CharField(max_length=15, null=False)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+
+
 class HomeAddress(models.Model):
     employee = models.OneToOneField(Employee, on_delete=models.CASCADE, primary_key=True)
     district = models.CharField(max_length=20)
@@ -136,12 +141,18 @@ class Dependant(models.Model):
 
 
 class Deduction(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    name = models.CharField(max_length=20)
-    amount = models.IntegerField()
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    sacco = models.IntegerField(default=0)
+    damage = models.IntegerField(default=0)
+    salary_advance = models.IntegerField(default=0)
+    police_fine = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.name + " " + str(self.amount)
+        return self.employee.first_name + " Deduction"
+
+    @property
+    def total_deduction(self):
+        return self.sacco + self.damage + self.salary_advance + self.police_fine
 
 
 class Leave(models.Model):

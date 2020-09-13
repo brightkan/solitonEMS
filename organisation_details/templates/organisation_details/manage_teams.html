@@ -55,7 +55,7 @@ $(document).ready(function(){
                             <tbody id="teams">
                             {% for team in teams %}
                             <tr>
-                                <td><a href="#" style="color: inherit">{{ team.name }}</a></td>
+                                <td><a href="{% url 'team_employees' team.id %}" style="color: inherit">{{ team.name }}</a></td>
                                 <td>{{ team.supervisor }}</td>
                                 <td>{{team.department}}</td>
                                 <td>{{ team.status }}</td>

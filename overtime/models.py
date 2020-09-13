@@ -27,11 +27,18 @@ class OvertimeApplication(models.Model):
 
     @property
     def is_on_sunday(self):
-        return self.start_time.weekday() == 6
+        """Bug: end_time datetime object converts to the day before if datetime is between midnignt and 6 a.m"""
+        return self.end_time.weekday() == 6
 
     @property
     def is_on_holiday(self):
-        return is_on_holiday(self.start_time)
+        """Bug: end_time datetime object converts to the day before if datetime is between midnignt and 6 a.m"""
+        return is_on_holiday(self.end_time)
+
+    @property
+    def date_of_work(self):
+        """Bug: end_time datetime object converts to the day before if datetime is between midnignt and 6 a.m"""
+        return self.end_time.date()
 
     @property
     def overtime_pay(self):
@@ -59,3 +66,5 @@ class OvertimeSchedule(models.Model):
     date = models.DateField()
     number_of_hours = models.IntegerField(blank=True)
     description = models.TextField()
+
+

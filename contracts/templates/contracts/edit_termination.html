@@ -1,0 +1,52 @@
+{% extends 'solitonems/base.html' %}
+{% block page_title %}
+Edit Termination
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST" action="#" enctype="multipart/form-data"> {%csrf_token%}
+
+                        <div class="form-group">
+                            <label>Employee:</label>
+                            <select class="form-control" name="employee" required>
+                                <option value={{termination.employee.id}}>{{termination.employee}}</option>
+                                {%for employee in employees%}
+                                <option value={{employee.id}}>{{employee}}</option>
+                                {%endfor%}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Type:</label>
+                            <select class="form-control" name="type" required>
+                                <option value={{termination.type}}>{{termination.type}}</option>
+                                <option value="Permanent">Resignation</option>
+                                <option value="Probational">Dismissal</option>
+                                <option value="Probational">Temporary Dismissal</option>
+                            </select>
+                        </div>
+
+                        <label>Termination Letter:</label>
+                        <input class="form-control" type="file" value={{termination.termination_letter}}
+                               name="termination_letter">
+
+                        <label>Clearance Form:</label>
+                        <input class="form-control" type="file" value={{termination.clearance_form}} name="clearance_form">
+
+                        <div class="form-group">
+                            <label>Description:</label>
+                            <textarea class="form-control" name="description" required>{{termination.description}}</textarea>
+                        </div>
+                        <button class="btn btn-danger" type="submit">Save</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock content%}

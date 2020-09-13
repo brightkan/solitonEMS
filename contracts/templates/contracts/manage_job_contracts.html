@@ -44,6 +44,7 @@ $(document).ready(function(){
                             <th>Reference Number</th>
                             <th>Position</th>
                             <th>Employee</th>
+                            <th>Type</th>
                             <th>Effective Date</th>
                             <th>Expiry Date</th>
                             <th>Risk</th>
@@ -56,6 +57,7 @@ $(document).ready(function(){
                                 <td><a href="#" style="color: inherit">{{contract.reference_number}}</a></td>
                                 <td>{{contract.position}}</td>
                                 <td>{{contract.employee}}</td>
+                                <td>{{contract.type}}</td>
                                 <td>{{contract.effective_date}}</td>
                                 <td>{{contract.expiry_date}}</td>
                                 <td>{{contract.risk | title}}</td>
@@ -116,6 +118,15 @@ $(document).ready(function(){
                                     {%for position in positions%}
                                     <option value={{position.id}}>{{position}}</option>
                                     {%endfor%}
+                                </select>
+                            </div>
+                             <div class="form-group">
+                                <label>Contract Type:</label>
+                                <select class="form-control" name="contract_type" required>
+                                    <option>=== Select Contract Type ===</option>
+                                    <option value="Permanent">Permanent</option>
+                                    <option value="Probational">Probational</option>
+                                    <option value="Internship">Internship</option>
                                 </select>
                             </div>
                             <div class="form-group">

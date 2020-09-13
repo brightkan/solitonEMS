@@ -21,51 +21,65 @@ $(document).ready(function(){
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal_add_period">
                 Create Period
             </button>
+            <a href="{%url 'review_financial_info'%}">
+                <button type="button" class="btn btn-outline">
+                    Review and Edit Financial Information
+                </button>
+            </a>
             <div class="card">
                 <div class="card-body">
-                    {%if payroll_records%}
-                    <div class="table-responsive">
-                        <div class="form-group "> 
-                            <i class="fas fa-search " aria-hidden="true"></i>
-                            <input id="search_input" type="text" class="form-control" placeholder="Search....">                      
-                        </div>
-                        <table class="table">
-                            <thead class="thead-dark">
-                            <th>Payroll Record ID</th>
-                            <th>Month</th>
-                            <th>Year</th>
-                            <th>Actions</th>
-                            </thead>
-                            <tbody id="payroll_list">
-                            {%for payroll_record in payroll_records%}
-                            <tr>
-                                <td>{{payroll_record.id}}</td>
-                                <td>{{payroll_record.month}}</td>
-                                <td>{{payroll_record.year}}</td>
-                                <td>
-                                    <a href="{%url 'payroll_record_page' payroll_record.id%}"
-                                       style="color: inherit">
-                                        <button>Generate Payroll</button>
-                                    </a> |
-                                    <a href="{%url 'delete_period' payroll_record.id %}" style="color: inherit" ...
-                                       onclick="return confirm('Are you sure you want to delete payroll record
-                                   {{payroll_record.id}}?')">
-                                        <button>Delete</button>
-                                    </a>
-                                </td>
-
-                            </tr>
-                            {%endfor%}
-                            </tbody>
-                        </table>
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div{% if message.tags %} class="alert alert-warning" {% endif %}> {{ message }} </div>
+                {% endfor %}
+                {% endif %}
+                {%if payroll_records%}
+                <div class="table-responsive">
+                    <div class="form-group ">
+                        <i class="fas fa-search " aria-hidden="true"></i>
+                        <input id="search_input" type="text" class="form-control" placeholder="Search....">
                     </div>
-                    {%else%}
-                    <h3>No Payroll Records Available</h3>
-                    {%endif%}
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <th>Payroll Record ID</th>
+                        <th>Month</th>
+                        <th>Year</th>
+                        <th>Actions</th>
+                        </thead>
+                        <tbody id="payroll_list">
+                        {%for payroll_record in payroll_records%}
+                        <tr>
+                            <td>{{payroll_record.id}}</td>
+                            <td>{{payroll_record.month}}</td>
+                            <td>{{payroll_record.year}}</td>
+                            <td>
+                                <a href="{%url 'payroll_record_page' payroll_record.id%}"
+                                   style="color: inherit">
+                                    <button class="btn btn-sm btn-primary">Generate Payroll</button>
+                                </a> |
+                                <a href="{%url 'archive_period' payroll_record.id %}"">
+                                <button class="btn btn-sm btn-success"
+                                        onclick="return confirm('Are you sure you want to archive payroll record {{payroll_record.id}}?')">
+                                    Archive</button>
+                                </a> |
+                                <a href="{%url 'delete_period' payroll_record.id %}">
+                                    <button class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Are you sure you want to delete payroll record {{payroll_record.id}}?')" >
+                                        Delete</button>
+                                </a>
+                            </td>
+                        </tr>
+                        {%endfor%}
+                        </tbody>
+                    </table>
                 </div>
+                {%else%}
+                <h3>No Payroll Records Available</h3>
+                {%endif%}
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- Modals -->

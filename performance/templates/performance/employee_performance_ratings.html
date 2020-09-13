@@ -1,0 +1,92 @@
+{% extends 'solitonems/base.html' %}
+{% block page_title %}
+Employee Performance
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h3>Performance Rating - {{performance_rating}}</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card animated fadeInUp">
+                    <div class="card-body">
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-warning">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {%if department_kpis%}
+                        <h4>Department Key Performance Indicators</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead class="thead-dark">
+                                <th>ID</th>
+                                <th>Measure of success</th>
+                                <th>Weight</th>
+                                <th>Score</th>
+                                </thead>
+                                {%for department_kpi in department_kpis%}
+                                <tr>
+                                    <td>{{department_kpi.id}}</td>
+                                    <td>{{department_kpi.measure_of_success}}</td>
+                                    <td>{{department_kpi.weight}}</td>
+                                    <td>{{department_kpi.score}}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                        </div>
+                        {%else%}
+                        <h4>No department key performance indicators available</h4>
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card animated fadeInUp">
+                    <div class="card-body">
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-warning">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {%if employee_kpis%}
+                        <h4>Employee Key Performance Indicators</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead class="thead-dark">
+                                <th>ID</th>
+                                <th>Measure of success</th>
+                                <th>Weight</th>
+                                <th>Score</th>
+                                </thead>
+                                {%for employee_kpi in employee_kpis%}
+                                <tr>
+                                    <td>{{employee_kpi.id}}</td>
+                                    <td>{{employee_kpi.measure_of_success}}</td>
+                                    <td>{{employee_kpi.weight}}</td>
+                                    <td>{{employee_kpi.score}}</td>
+                                </tr>
+                                {%endfor%}
+                            </table>
+                        </div>
+                        {%else%}
+                        <h3>No employee key performance indicators available</h3>
+                        {%endif%}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock content%}

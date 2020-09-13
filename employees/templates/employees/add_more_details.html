@@ -38,6 +38,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="card card-profile">
                     <div class="card-body">
                         <h4 class="card-title">Bank Details</h4>
@@ -70,6 +71,42 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card card-profile">
+                    <div class="card-body">
+                        <h4 class="card-title">Non Statutory Deductions</h4>
+                        <div class="card-description">
+                            {% if employee.deduction %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <td>Sacco</td>
+                                        <td>{{employee.deduction.sacco}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Damage</th>
+                                        <td>{{employee.deduction.damage}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Salary Advance</th>
+                                        <td>{{employee.deduction.salary_advance}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">Police Fine</th>
+                                        <td>{{employee.deduction.police_fine}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <a href="#" class="btn btn-primary btn-round" data-toggle="modal"
+                               data-target="#modal_edit_deduction"> <i class="fa fa-edit"></i>Edit</a>
+                            {% else %}
+                            <a href="#" class="btn btn-danger btn-round" data-toggle="modal"
+                               data-target="#modal_add_deduction"> <i class="fa fa-plus"></i></a>
+                            {% endif%}
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="col-md-6">
                 <div class="card card-profile">
@@ -540,53 +577,6 @@
                         <button class="btn btn-danger" type="submit">Save</button>
                     </div>
                     </form>
-
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="material-icons" style="font-size: 3em; float:left; margin-right:20px">wallet</i>
-                        <h4 class="card-title ">Payroll Non statutory deductions</h4>
-                    </div>
-                    <div class="card-body">
-                        <button class="btn-outline-danger" data-toggle="modal" data-target="#modal_add_deduction">Add a
-                            deduction
-                        </button>
-                        {%if deductions%}
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead class="text-primary">
-                                <th>
-                                    Name
-                                </th>
-                                <th>
-                                    Amount
-                                </th>
-
-
-                                </thead>
-                                <tbody>
-                                {%for deduction in deductions%}
-                                <tr>
-                                    <td>{{deduction.name}}</td>
-                                    <td>{{deduction.amount}}</td>
-                                    <td>
-                                        <a href="{%url 'delete_deduction' deduction.id%}" style="color: inherit"
-                                           href=""
-                                           onclick="return confirm('Are you sure you want to delete this deduction from {{employee.first_name}}?')">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {%endfor%}
-                                </tbody>
-                            </table>
-                        </div>
-                        {%endif%}
-                    </div>
                 </div>
             </div>
         </div>
@@ -694,20 +684,22 @@
 
                         <form method="POST" action="{%url 'add_deduction'%}"> {%csrf_token%}
                             <div class="form-group">
-                                <label for="sel1">Name:</label>
-                                <select class="form-control" id="sel1" name="deduction_name" required>
-                                    <option>Sacco</option>
-                                    <option>Damage</option>
-                                    <option>Others</option>
-                                </select>
+                                <label>Sacco:</label>
+                                <input type="number" class="form-control" name="sacco" value=0 required>
                             </div>
                             <div class="form-group">
-                                <label>Amount:</label>
-                                <input type="number" class="form-control" name="deduction_amount" id="" required>
+                                <label>Damage:</label>
+                                <input type="number" class="form-control" name="damage" value=0 required>
+                            </div>
+                            <div class="form-group">
+                                <label>Salary Advance:</label>
+                                <input type="number" class="form-control" name="salary_advance" value=0 required>
+                            </div>
+                            <div class="form-group">
+                                <label>Police Fine:</label>
+                                <input type="number" class="form-control" name="police_fine" value=0 required>
                             </div>
                             <input type="hidden" name="employee_id" value={{employee.id}}>
-
-
                     </div>
                     <!--Footer-->
                     <div class="modal-footer">
@@ -729,60 +721,39 @@
                 <div class="modal-content">
                     <!--Header-->
                     <div class="modal-header">
-                        <h4 class="modal-title" id="myModalLabel">Edit {{employee.first_name}}'s Home Address</h4>
+                        <h4 class="modal-title" id="myModalLabel">Edit {{employee.first_name}}'s Non Statutory Deductions</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
                         </button>
                     </div>
                     <!--Body-->
                     <div class="modal-body">
-                        <form method="POST" action="{%url 'edit_home_address'%}"> {%csrf_token%}
+                        <form method="POST" action="{%url 'edit_deduction'%}"> {%csrf_token%}
                             <div class="form-group">
-                                <label>District</label>
-                                <input type="text" class="form-control" placeholder="Enter home district"
-                                       name="district" value="{{employee.homeaddress.district}}" required>
+                                <label>Sacco:</label>
+                                <input type="number" class="form-control" name="sacco"
+                                       value={{employee.deduction.sacco}} required>
                             </div>
                             <div class="form-group">
-                                <label for="">Division</label>
-                                <input type="text" class="form-control" placeholder="Enter home division"
-                                       value="{{employee.homeaddress.division}}" name="division" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="">County</label>
-                                <input type="text" class="form-control" placeholder="Enter home county" name="county"
-                                       value="{{employee.homeaddress.county}}" required>
+                                <label>Damage:</label>
+                                <input type="number" class="form-control" name="damage"
+                                       value={{employee.deduction.damage}} required>
                             </div>
                             <div class="form-group">
-                                <label for="">Sub County</label>
-                                <input type="text" class="form-control" placeholder="Enter home sub county"
-                                       value="{{employee.homeaddress.sub_county}}" name="sub_county" required>
+                                <label>Salary Advance:</label>
+                                <input type="number" class="form-control" name="salary_advance"
+                                       value={{employee.deduction.salary_advance}} required>
                             </div>
                             <div class="form-group">
-                                <label for="">Parish</label>
-                                <input type="text" class="form-control" placeholder="Enter parish" name="parish"
-                                       value="{{employee.homeaddress.parish}}" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Village</label>
-                                <input type="text" class="form-control" placeholder="Enter village" name="village"
-                                       value="{{employee.homeaddress.village}}" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Address</label>
-                                <input type="text" class="form-control" placeholder="Enter address" name="address"
-                                       value="{{employee.homeaddress.address}}" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="">Telephone</label>
-                                <input type="text" class="form-control" placeholder="Enter telephone" name="telephone"
-                                       value="{{employee.homeaddress.telephone}}" required>
+                                <label>Police Fine:</label>
+                                <input type="number" class="form-control" name="police_fine"
+                                       value={{employee.deduction.police_fine}} required>
                             </div>
                             <input type="hidden" name="employee_id" value={{employee.id}}>
                     </div>
                     <!--Footer-->
                     <div class="modal-footer">
-                        <button data-dismiss="modal" aria-label="Close" class="btn btn-outline-danger"
+                        <button class="btn btn-outline-danger" data-dismiss="modal" aria-label="Close"
                                 type="reset">Close
                         </button>
                         <button class="btn btn-danger" type="submit">Save</button>

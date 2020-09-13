@@ -2,17 +2,18 @@ import csv
 import datetime
 
 from django.contrib import messages
+from django.db import IntegrityError
 from django.shortcuts import render
 
 from django.http import HttpResponse, HttpResponseRedirect
 
 from SOLITONEMS.settings import BASE_DIR
-from employees.selectors import get_employees_paid_in_usd, get_employees_paid_in_ugx
+from employees.selectors import get_employees_paid_in_usd, get_employees_paid_in_ugx, get_active_employees
 from ems_admin.decorators import log_activity
-from ems_auth.decorators import payroll_full_auth_required, hr_required
+from ems_auth.decorators import hr_required
 from ems_auth.models import SolitonUser
 from payroll.selectors import get_payroll_record_by_id, get_ugx_payslips, get_usd_payslips, \
-    get_payslips
+    get_payslips, get_unarchived_payroll_records
 from payroll.services import create_payslip_list_service
 from settings.selectors import get_usd_currency
 
@@ -22,31 +23,39 @@ from .simple_payslip import SimplePayslip
 
 from .procedures import get_total_non_statutory_deductions, get_total_nssf, get_total_paye, get_total_gross_pay, \
     get_total_basic_pay, \
-    get_total_net_pay, render_to_pdf
+    get_total_net_pay, render_to_pdf, get_total_sacco
 
 
-@payroll_full_auth_required
+@hr_required
 @log_activity
 def payroll_page(request):
     context = {
-        "payroll_page": "active"
+        "payroll_page": "active",
+
     }
     return render(request, 'payroll/payroll_page.html', context)
 
 
 @hr_required
-@payroll_full_auth_required
+@log_activity
+def review_financial_info_page(request):
+    context = {
+        "payroll_page": "active",
+        "employees": get_active_employees()
+    }
+    return render(request, 'payroll/review_and_edit_financial_info.html', context)
+
+
 @hr_required
 @log_activity
 def manage_payroll_records_page(request):
     date_now = datetime.datetime.now()
-
     today_month = date_now.strftime("%B")
     today_year = date_now.strftime("%Y")
     context = {
         "user": request.user,
         "payroll_page": "active",
-        "payroll_records": PayrollRecord.objects.all(),
+        "payroll_records": get_unarchived_payroll_records(),
         "default_month": today_month,
         "default_year": today_year
     }
@@ -54,7 +63,6 @@ def manage_payroll_records_page(request):
 
 
 @hr_required
-@payroll_full_auth_required
 @log_activity
 def view_payroll_records_page(request):
     context = {
@@ -65,7 +73,7 @@ def view_payroll_records_page(request):
     return render(request, 'payroll/payroll_records.html', context)
 
 
-@payroll_full_auth_required
+@hr_required
 @log_activity
 def payroll_record_page(request, id):
     # Get the payroll record
@@ -92,43 +100,47 @@ def payroll_record_page(request, id):
         "total_nssf_contribution": get_total_nssf(ugx_payslips),
         "total_paye": get_total_paye(ugx_payslips),
         "total_gross_pay": get_total_gross_pay(ugx_payslips),
-        "total_basic_pay": get_total_basic_pay(ugx_employees),
+        "total_basic_pay": get_total_basic_pay(ugx_payslips),
         "total_net_pay": get_total_net_pay(ugx_payslips),
     }
     return render(request, 'payroll/payroll_record.html', context)
 
 
-@payroll_full_auth_required
+@hr_required
 @log_activity
 def payroll_record_page_usd(request, id):
-    # Get the payroll record
-    payroll_record = PayrollRecord.objects.get(pk=id)
-    month = payroll_record.month
-    year = payroll_record.year
-    # Get all the associated payslip objects
-    usd_currency = get_usd_currency()
-    usd_currency_cost = float(usd_currency.cost)
-    usd_payslips = get_usd_payslips(payroll_record)
-    # Get all employees
     usd_employees = get_employees_paid_in_usd()
-    total_paye = get_total_paye(usd_payslips)
-    total_nssf_contribution = get_total_nssf(usd_payslips)
-    context = {
-        "payroll_page": "active",
-        "month": month,
-        "year": year,
-        "usd_payslips": usd_payslips,
-        "payroll_record": payroll_record,
-        "total_nssf_contribution": total_nssf_contribution,
-        "total_paye": total_paye,
-        "total_gross_pay": get_total_gross_pay(usd_payslips),
-        "total_basic_pay": get_total_basic_pay(usd_employees),
-        "total_net_pay": get_total_net_pay(usd_payslips),
-        "total_paye_ugx": total_paye * usd_currency_cost,
-        "total_nssf_contribution_ugx": total_nssf_contribution * usd_currency_cost,
+    payroll_record = PayrollRecord.objects.get(pk=id)
+    # Get the payroll record
+    if usd_employees:
+        month = payroll_record.month
+        year = payroll_record.year
+        # Get all the associated payslip objects
+        usd_currency = get_usd_currency()
+        usd_currency_cost = float(usd_currency.cost)
+        usd_payslips = get_usd_payslips(payroll_record)
+        # Get all employees
+        total_paye = get_total_paye(usd_payslips)
+        total_nssf_contribution = get_total_nssf(usd_payslips)
+        total_paye_ugx = total_paye * usd_currency_cost
+        context = {
+            "payroll_page": "active",
+            "month": month,
+            "year": year,
+            "usd_payslips": usd_payslips,
+            "payroll_record": payroll_record,
+            "total_nssf_contribution": total_nssf_contribution,
+            "total_paye": total_paye,
+            "total_gross_pay": get_total_gross_pay(usd_payslips),
+            "total_basic_pay": get_total_basic_pay(usd_payslips),
+            "total_net_pay": get_total_net_pay(usd_payslips),
+            "total_paye_ugx": total_paye_ugx,
+            "total_nssf_contribution_ugx": total_nssf_contribution * usd_currency_cost,
 
-    }
-    return render(request, 'payroll/payroll_record_usd.html', context)
+        }
+        return render(request, 'payroll/payroll_record_usd.html', context)
+    else:
+        return HttpResponseRedirect(reverse(payroll_record_page, args=[id]))
 
 
 @log_activity
@@ -146,7 +158,7 @@ def edit_period_page(request, id):
     return render(request, 'payroll/edit_payroll.html', context)
 
 
-@payroll_full_auth_required
+@hr_required
 @log_activity
 def payslip_page(request, id):
     # Get the payroll
@@ -203,7 +215,7 @@ def your_payslip_page(request):
     return render(request, 'payroll/payslip.html', context)
 
 
-@payroll_full_auth_required
+@hr_required
 @log_activity
 def payslips_page(request, payroll_record_id):
     payroll_record = get_payroll_record_by_id(payroll_record_id)
@@ -220,13 +232,11 @@ def payslips_page(request, payroll_record_id):
     return render(request, 'payroll/payslips.html', context)
 
 
-@payroll_full_auth_required
 @log_activity
 def generate_payslip_pdf(request, id):
     # Get the payslip
     payslip = Payslip.objects.get(pk=id)
     user = request.user
-    print("The base directory is", BASE_DIR)
     context = {
         "payslip": payslip,
         "month": payslip.payroll_record.month,
@@ -240,6 +250,80 @@ def generate_payslip_pdf(request, id):
     return HttpResponse(pdf, content_type='application/pdf')
 
 
+@hr_required
+@log_activity
+def generate_payroll_ugx_pdf(request, id):
+    # Get the payroll
+    payroll_record = PayrollRecord.objects.get(pk=id)
+
+    month = payroll_record.month
+    year = payroll_record.year
+
+    # Get all the associated payslip objects
+    payslips = get_payslips(payroll_record=payroll_record)
+    ugx_payslips = get_ugx_payslips(payroll_record)
+    usd_payslips = get_usd_payslips(payroll_record)
+
+    context = {
+        "payroll_page": "active",
+        "month": month,
+        "year": year,
+        "payslips": payslips,
+        "ugx_payslips": ugx_payslips,
+        "usd_payslips": usd_payslips,
+        "payroll_record": payroll_record,
+        "total_nssf_contribution": get_total_nssf(ugx_payslips),
+        "total_paye": get_total_paye(ugx_payslips),
+        "total_sacco": get_total_sacco(ugx_payslips),
+        "total_gross_pay": get_total_gross_pay(ugx_payslips),
+        "total_basic_pay": get_total_basic_pay(ugx_payslips),
+        "total_net_pay": get_total_net_pay(ugx_payslips),
+        "base_dir": BASE_DIR,
+    }
+    pdf = render_to_pdf('solitonems/payroll.html', context)
+    return HttpResponse(pdf, content_type='application/pdf')
+
+
+@hr_required
+def generate_payroll_usd_pdf(request, id):
+    usd_employees = get_employees_paid_in_usd()
+    payroll_record = PayrollRecord.objects.get(pk=id)
+    # Get the payroll record
+    if usd_employees:
+        month = payroll_record.month
+        year = payroll_record.year
+        # Get all the associated payslip objects
+        usd_currency = get_usd_currency()
+        usd_currency_cost = float(usd_currency.cost)
+        usd_payslips = get_usd_payslips(payroll_record)
+        # Get all employees
+        total_paye = get_total_paye(usd_payslips)
+        total_nssf_contribution = get_total_nssf(usd_payslips)
+        total_paye_ugx = total_paye * usd_currency_cost
+
+        context = {
+            "payroll_page": "active",
+            "month": month,
+            "year": year,
+            "usd_payslips": usd_payslips,
+            "payroll_record": payroll_record,
+            "total_nssf_contribution": total_nssf_contribution,
+            "total_paye": total_paye,
+            "total_sacco": get_total_sacco(usd_payslips),
+            "total_gross_pay": get_total_gross_pay(usd_payslips),
+            "total_basic_pay": get_total_basic_pay(usd_payslips),
+            "total_net_pay": get_total_net_pay(usd_payslips),
+            "total_paye_ugx": total_paye_ugx,
+            "total_nssf_contribution_ugx": total_nssf_contribution * usd_currency_cost,
+            "base_dir": BASE_DIR,
+
+        }
+        pdf = render_to_pdf('solitonems/payroll_usd.html', context)
+        return HttpResponse(pdf, content_type='application/pdf')
+    else:
+        return HttpResponseRedirect(reverse(payroll_record_page, args=[id]))
+
+
 ###############################################################
 # Processes
 ###############################################################
@@ -251,8 +335,11 @@ def add_period(request):
     # Create payroll instance
     payroll_record = PayrollRecord(month=month, year=year)
     # Save payroll
-    payroll_record.save()
-
+    try:
+        payroll_record.save()
+        messages.success(request, "Payroll for the period created successfully")
+    except IntegrityError:
+        messages.error(request, "Payroll for the period already available")
     return HttpResponseRedirect(reverse('manage_payroll_records_page'))
 
 
@@ -261,6 +348,16 @@ def delete_period(request, id):
     payroll_record = PayrollRecord.objects.get(pk=id)
     # Delete the payrool_record
     payroll_record.delete()
+    return HttpResponseRedirect(reverse('manage_payroll_records_page'))
+
+
+def archive_period(request, id):
+    # Grab the payroll record
+    payroll_record = PayrollRecord.objects.get(pk=id)
+    # Archive the payrool_record
+    payroll_record.archived = True
+    payroll_record.save()
+    messages.success(request, "Archived payroll record successfully")
     return HttpResponseRedirect(reverse('manage_payroll_records_page'))
 
 
@@ -280,7 +377,7 @@ def edit_period(request):
     return HttpResponseRedirect(reverse('manage_payroll_records_page'))
 
 
-@payroll_full_auth_required
+@hr_required
 def create_payroll_payslips(request, id):
     payroll_record = get_payroll_record_by_id(id)
     create_payslip_list_service(payroll_record)
@@ -437,7 +534,7 @@ def add_overtime(request):
     return HttpResponseRedirect(reverse('payslip_page', args=[payroll.id]))
 
 
-@payroll_full_auth_required
+@hr_required
 @log_activity
 def payroll_download(request, id):
     # Get the payroll record
@@ -455,21 +552,27 @@ def payroll_download(request, id):
     heading_text = "Payroll for " + month + " " + year
     writer.writerow([heading_text.upper()])
     writer.writerow(
-        ['Name', 'Employee NSSF Contribution', 'Employer NSSF contribution', 'PAYE', 'Bonus', 'Sacco Deduction',
-         'Damage Deduction', 'Basic Salary', 'Lunch Allowance', 'Overtime', 'Gross Salary', 'Net Salary'])
+        ['Name', 'Basic Salary', 'Gross Salary', 'Employee NSSF Contribution', 'Employer NSSF contribution',
+         'PAYE',
+         'Lunch Allowance', 'Overtime',
+         'Bonus',
+         'Sacco Deduction',
+         'Damage Deduction', 'Net Salary'])
     # Writing other rows
     for payroll in payrolls:
         name = payroll.employee.first_name + " " + payroll.employee.last_name
         writer.writerow(
-            [name, payroll.employee_nssf, payroll.employer_nssf, payroll.paye, payroll.bonus, payroll.sacco_deduction,
-             payroll.damage_deduction, payroll.employee.basic_salary, 150000, payroll.overtime, payroll.gross_salary,
+            [name, payroll.employee.basic_salary, payroll.gross_salary, payroll.employee_nssf, payroll.employer_nssf,
+             payroll.paye, payroll.employee.lunch_allowance, payroll.overtime,
+             payroll.bonus, payroll.sacco_deduction,
+             payroll.damage_deduction,
              payroll.net_salary, ])
 
     # Return the response
     return response
 
 
-@payroll_full_auth_required
+@hr_required
 @log_activity
 def payroll_download_usd(request, id):
     # Get the payroll record
@@ -487,16 +590,22 @@ def payroll_download_usd(request, id):
     heading_text = "Payroll for " + month + " " + year + "(USD)"
     writer.writerow([heading_text.upper()])
     writer.writerow(
-        ['Name', 'Employee NSSF Contribution', 'Employer NSSF contribution', 'PAYE', 'Bonus', 'Sacco Deduction',
-         'Damage Deduction', 'Basic Salary', 'Lunch Allowance', 'Overtime', 'Gross Salary', 'Net Salary', 'PAYE(UGX)',
-         'Total NSSF Contribution(UGX)'])
+        ['Name', 'Basic Salary', 'Gross Salary', 'Employee NSSF Contribution', 'Employer NSSF contribution',
+         'PAYE(UGX)',
+         'Lunch Allowance', 'Overtime',
+         'Bonus',
+         'Sacco Deduction',
+         'Damage Deduction', 'Net Salary'])
     # Writing other rows
     for payroll in payrolls:
         name = payroll.employee.first_name + " " + payroll.employee.last_name
         writer.writerow(
-            [name, payroll.employee_nssf, payroll.employer_nssf, payroll.paye, payroll.bonus, payroll.sacco_deduction,
-             payroll.damage_deduction, payroll.employee.basic_salary, 150000, payroll.overtime, payroll.gross_salary,
-             payroll.net_salary, payroll.paye_ugx, payroll.nssf_ugx])
+            [name, payroll.employee.basic_salary, payroll.gross_salary, payroll.employee_nssf, payroll.employer_nssf,
+             payroll.paye_ugx,
+             payroll.employee.lunch_allowance, payroll.overtime,
+             payroll.bonus,
+             payroll.sacco_deduction,
+             payroll.damage_deduction, payroll.net_salary])
 
     # Return the response
     return response

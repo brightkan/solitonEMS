@@ -1,5 +1,5 @@
 from django.forms import ModelForm, EmailField, TextInput
-from ems_admin.models import EMSPermission
+
 from ems_auth.models import User, SolitonUser
 
 
@@ -29,6 +29,7 @@ class SolitonUserEditForm(ModelForm):
 
 
 class EMSPermissionForm(ModelForm):
-    class Meta:
-        model = EMSPermission
-        fields = ['full_auth', 'view_only']
+    # class Meta:
+    #     model = EMSPermission
+    #     fields = ['full_auth', 'view_only']
+    pass
