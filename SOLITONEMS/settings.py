@@ -120,14 +120,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = '/home/solitonug/solitonEMS/static'
 
-<<<<<<< HEAD
-EMAIL_BACKEND ="sendgrid_backend.SendgridBackend"
-SENDGRID_API_KEY = config("SENDGRID_API_KEY")
-SENDGRID_SANDBOX_MODE_IN_DEBUG =config("SENDGRID_SANDBOX_MODE_IN_DEBUG",cast=bool)
-DEFAULT_FROM_EMAIL=config("DEFAULT_FROM_EMAIL")
 
-
-=======
 EMAIL_HOST = config("EMAIL_HOST")
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = config("SENDGRID_API_KEY")
@@ -135,7 +128,7 @@ FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 EMAIL_PORT = config("EMAIL_PORT")
 EMAIL_USE_TLS = config("EMAIL_USE_TLS")
->>>>>>> develop
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
