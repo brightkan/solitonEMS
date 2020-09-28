@@ -74,6 +74,30 @@
 
                 <div class="card card-profile">
                     <div class="card-body">
+                        <h4 class="card-title">Statutory Deduction</h4>
+                        <div class="card-description">
+                            {% if employee.statutorydeduction %}
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <tr>
+                                        <td>Local Service Tax</td>
+                                        <td>{{employee.statutorydeduction.local_service_tax}}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <a href="#" class="btn btn-primary btn-round" data-toggle="modal"
+                               data-target="#modal_edit_statutory_deduction"> <i class="fa fa-edit"></i>Edit</a>
+                            {% else %}
+                            <a href="#" class="btn btn-danger btn-round" data-toggle="modal"
+                               data-target="#modal_add_statutory_deduction"> <i class="fa fa-plus"></i></a>
+                            {% endif%}
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="card card-profile">
+                    <div class="card-body">
                         <h4 class="card-title">Non Statutory Deductions</h4>
                         <div class="card-description">
                             {% if employee.deduction %}
@@ -698,6 +722,74 @@
                             <div class="form-group">
                                 <label>Police Fine:</label>
                                 <input type="number" class="form-control" name="police_fine" value=0 required>
+                            </div>
+                            <input type="hidden" name="employee_id" value={{employee.id}}>
+                    </div>
+                    <!--Footer-->
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-danger" data-dismiss="modal" aria-label="Close"
+                                type="reset">Close
+                        </button>
+                        <button class="btn btn-danger" type="submit">Save</button>
+                    </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modal_add_statutory_deduction" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+             aria-hidden="true" style="overflow-y: auto !important">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Add {{employee.first_name}}'s Statutory Deduction
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <!--Body-->
+                    <div class="modal-body">
+                        <form method="POST" action="{%url 'add_statutory_deduction'%}"> {%csrf_token%}
+                            <div class="form-group">
+                                <label>Local Service Tax:</label>
+                                <input type="number" class="form-control" name="local_service_tax" value=0 required>
+                            </div>
+                            <input type="hidden" name="employee_id" value={{employee.id}}>
+                    </div>
+                    <!--Footer-->
+                    <div class="modal-footer">
+                        <button class="btn btn-outline-danger" data-dismiss="modal" aria-label="Close"
+                                type="reset">Close
+                        </button>
+                        <button class="btn btn-danger" type="submit">Save</button>
+                    </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modal_edit_statutory_deduction" tabindex="-1" role="dialog"
+             aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow-y: auto !important">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <!--Header-->
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">Edit {{employee.first_name}}'s Non Statutory Deductions</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <!--Body-->
+                    <div class="modal-body">
+                        <form method="POST" action="{%url 'edit_statutory_deduction'%}"> {%csrf_token%}
+                            <div class="form-group">
+                                <label>Local Service Tax:</label>
+                                <input type="number" class="form-control" name="local_service_tax"
+                                       value={{employee.statutorydeduction.local_service_tax}} required>
                             </div>
                             <input type="hidden" name="employee_id" value={{employee.id}}>
                     </div>

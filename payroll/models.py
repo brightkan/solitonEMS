@@ -28,6 +28,8 @@ class Payslip(models.Model):
     total_nssf_contrib = models.FloatField(default=0)
     overtime = models.FloatField()
     bonus = models.FloatField(default=0)
+    local_service_tax = models.FloatField()
+    local_service_tax_deduction = models.FloatField()
     sacco_deduction = models.FloatField()
     damage_deduction = models.FloatField()
     salary_advance = models.FloatField()
@@ -42,7 +44,7 @@ class Payslip(models.Model):
 
     @property
     def total_statutory(self):
-        return self.total_nssf_contrib + self.paye
+        return self.total_nssf_contrib + self.paye + self.local_service_tax_deduction
 
     @property
     def paye_ugx(self):

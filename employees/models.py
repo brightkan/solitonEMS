@@ -11,6 +11,7 @@ class Employee(models.Model):
     last_name = models.CharField(max_length=30)
     basic_salary = models.IntegerField(default=1000000)
     bonus = models.IntegerField(default=0)
+    local_service_tax = models.IntegerField(default=0)
     grade = models.CharField(max_length=3, default="")
     gender = models.CharField(max_length=10)
     start_date = models.DateField()
@@ -153,6 +154,14 @@ class Deduction(models.Model):
     @property
     def total_deduction(self):
         return self.sacco + self.damage + self.salary_advance + self.police_fine
+
+
+class StatutoryDeduction(models.Model):
+    employee = models.OneToOneField(Employee, on_delete=models.CASCADE)
+    local_service_tax = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Local service tax {self.local_service_tax}"
 
 
 class Leave(models.Model):

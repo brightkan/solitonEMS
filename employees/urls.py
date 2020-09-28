@@ -14,7 +14,6 @@ urlpatterns = [
     path('edit_spouse_page/<int:id>/', views.edit_spouse_page, name="edit_spouse_page"),
     path('edit_dependant_page/<int:id>/', views.edit_dependant_page, name="edit_dependant_page"),
 
-
     # Process
     path('add_new_employee/', views.add_new_employee, name="add_new_employee"),
     path('delete_employee/<int:id>', views.delete_employee, name="delete_employee"),
@@ -39,8 +38,8 @@ urlpatterns = [
     path('add_employee_contacts/', views.add_employee_contacts, name="add_employee_contacts"),
     path('delete_employee_contact/', views.delete_employee_contact, name="delete_employee_contact"),
 
-
-
+    path('add_statutory_deduction/', views.add_statutory_deduction, name="add_statutory_deduction"),
+    path('edit_statutory_deduction/', views.edit_statutory_deduction, name="edit_statutory_deduction"),
     path('add_deduction/', views.add_deduction, name="add_deduction"),
     path('edit_deduction/', views.edit_deduction, name="edit_deduction"),
     path('add_allowance/', views.add_allowance, name="add_allowance"),
@@ -61,6 +60,7 @@ urlpatterns = [
     path('activate_employees_page', views.activate_employees_page, name="activate_employees_page"),
     path('activate_employee/<int:employee_id>/', views.activate_employee, name="activate_employee"),
 ]
+
 
 # JS routes
 def javascript_settings():

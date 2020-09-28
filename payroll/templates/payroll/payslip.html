@@ -42,6 +42,12 @@
                             </td>
                             <td> {{payslip.currency}} {{payslip.paye | currency_filter}}</td>
                         </tr>
+
+                        <tr>
+                            <th>Local Service Tax Deduction
+                            </td>
+                            <td> {{payslip.currency}} {{payslip.local_service_tax_deduction | currency_filter}}</td>
+                        </tr>
                         <tr>
                             <th>Total Statutory Deductions
                             </td>
@@ -51,6 +57,11 @@
                             <th>Meal Allowance
                             </td>
                             <td> {{payslip.currency}} {{payslip.employee.lunch_allowance | currency_filter}}</td>
+                        </tr>
+                          <tr>
+                            <th>Local Service Tax Allowance
+                            </td>
+                            <td> {{payslip.currency}} {{payslip.employee.local_service_tax | currency_filter}}</td>
                         </tr>
                         <tr>
                             <th>Overtime

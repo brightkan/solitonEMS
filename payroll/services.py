@@ -32,6 +32,8 @@ def create_payslip_service(employee: object, payroll_record: object, overtime_pa
         total_nssf_contrib=simple_payslip.total_nssf_deduction,
         overtime=simple_payslip.overtime_pay,
         bonus=simple_payslip.bonus,
+        local_service_tax=simple_payslip.local_service_tax,
+        local_service_tax_deduction=simple_payslip.local_service_tax_deduction,
         sacco_deduction=simple_payslip.sacco_deduction_amount,
         damage_deduction=simple_payslip.damage_deduction_amount,
         salary_advance=simple_payslip.salary_advance_amount,

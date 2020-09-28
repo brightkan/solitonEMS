@@ -1,3 +1,4 @@
+from employees.models import Employee
 from settings.models import Currency
 from leave.models import Leave_Records
 import datetime
@@ -10,6 +11,7 @@ def create_employee_instance(request):
     grade = request.POST['grade']
     basic_salary = request.POST['basic_salary']
     bonus = request.POST['bonus']
+    local_service_tax = request.POST['local_service_tax']
     lunch_allowance = request.POST['lunch_allowance']
     gender = request.POST['gender']
     marital_status = request.POST['marital_status']
@@ -35,7 +37,8 @@ def create_employee_instance(request):
                         residence_address=residence_address, dob=dob, currency=currency, title=title,
                         work_station=work_station,
                         lunch_allowance=lunch_allowance,
-                        bonus=bonus
+                        bonus=bonus,
+                        local_service_tax=local_service_tax
                         )
     # Saving the employee instance
     employee.save()
@@ -101,5 +104,13 @@ def update_deduction(employee, sacco, damage, salary_advance, police_fine):
     deduction.damage = damage
     deduction.salary_advance = salary_advance
     deduction.police_fine = police_fine
+    deduction.save()
+    return deduction
+
+
+def update_statutory_deduction(employee, local_service_tax):
+    """Update statutory deductions of an employee"""
+    deduction = employee.statutorydeduction
+    deduction.local_service_tax = local_service_tax
     deduction.save()
     return deduction

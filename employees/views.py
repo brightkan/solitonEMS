@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.http import JsonResponse
 
-from employees.services import create_employee_instance, suspend, update_deduction
+from employees.services import create_employee_instance, suspend, update_deduction, update_statutory_deduction
 from ems_admin.decorators import log_activity
 from ems_auth.decorators import ems_login_required, hr_required, first_login
 from ems_auth.models import User
@@ -26,7 +26,7 @@ from .models import (
     BankDetail, Allowance,
     Supervision,
     Deduction,
-    Contacts)
+    Contacts, StatutoryDeduction)
 from leave.models import Leave_Records
 
 from settings.models import Currency
@@ -287,6 +287,7 @@ def edit_employee(request, id):
         employee.dob = request.POST['dob']
         currency_id = request.POST['renumeration_currency']
         employee.bonus = request.POST['bonus']
+        employee.local_service_tax = request.POST['local_service_tax']
         employee.currency = Currency.objects.get(pk=currency_id)
 
         employee.status = request.POST['status']
@@ -1034,6 +1035,35 @@ def delete_dependant(request, id):
 
 
 @log_activity
+def add_statutory_deduction(request):
+    if request.method == 'POST':
+        # Fetching data from the add deductions' form
+        local_service_tax = request.POST['local_service_tax']
+        employee_id = request.POST['employee_id']
+        employee = Employee.objects.get(pk=employee_id)
+
+        try:
+            deduction = StatutoryDeduction.objects.create(
+                employee=employee,
+                local_service_tax=local_service_tax
+            )
+            messages.success(request, "Successfully added statutory deduction")
+            return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
+
+        except IntegrityError:
+            messages.error(request, "Integrity problems while adding deduction")
+            return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
+
+    else:
+        context = {
+            "employees_page": "active",
+            "failed_msg": "Failed! You performed a GET request"
+        }
+
+        return render(request, "employees/failed.html", context)
+
+
+@log_activity
 def add_deduction(request):
     if request.method == 'POST':
         # Fetching data from the add deductions' form
@@ -1060,6 +1090,31 @@ def add_deduction(request):
             messages.error(request, "Integrity problems while adding deduction")
             return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
 
+    else:
+        context = {
+            "employees_page": "active",
+            "failed_msg": "Failed! You performed a GET request"
+        }
+
+        return render(request, "employees/failed.html", context)
+
+
+@ems_login_required
+@log_activity
+def edit_statutory_deduction(request):
+    if request.POST:
+        try:
+            local_service_tax = request.POST['local_service_tax']
+            employee_id = request.POST['employee_id']
+            employee = Employee.objects.get(pk=employee_id)
+
+            statutory_deduction = update_statutory_deduction(employee=employee,
+                                                             local_service_tax=local_service_tax)
+            messages.success(request, "Deduction updated successfully")
+            return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
+        except IntegrityError:
+            messages.error(request, "Integrity problems while adding deduction")
+            return HttpResponseRedirect(reverse(add_more_details_page, args=[employee_id]))
     else:
         context = {
             "employees_page": "active",

@@ -1,5 +1,5 @@
 # Class for employee payroll
-from employees.models import Employee, Deduction
+from employees.models import Employee, Deduction, StatutoryDeduction
 
 
 def convert_to_zero_if_none(value):
@@ -44,6 +44,15 @@ def calculate_paye(gross_salary, currency_cost) -> float:
     return paye
 
 
+def get_local_service_tax_deduction(employee):
+    try:
+        local_service_tax_deduction = employee.statutorydeduction.local_service_tax
+    except StatutoryDeduction.DoesNotExist:
+        local_service_tax_deduction = 0
+
+    return local_service_tax_deduction
+
+
 def get_sacco_deduction_amount(employee):
     try:
         sacco_deduction = employee.deduction.sacco
@@ -86,6 +95,8 @@ class SimplePayslip:
         self.employee = employee
         self.overtime_pay = convert_to_zero_if_none(overtime_pay)
         self.bonus = convert_to_zero_if_none(bonus)
+        self.local_service_tax = convert_to_zero_if_none(employee.local_service_tax)
+        self.local_service_tax_deduction = get_local_service_tax_deduction(employee)
         self.gross_salary = self.sum_all_income(employee)
         self.employee_nssf = calculate_employee_nssf_contribution(self.gross_salary)
         self.employer_nssf = calculate_employer_nssf_contribution(self.gross_salary)
@@ -99,7 +110,7 @@ class SimplePayslip:
         self.lunch_allowance = int(self.employee.lunch_allowance / self.currency_cost)
 
     def sum_all_income(self, employee):
-        return employee.initial_gross_salary + self.overtime_pay + self.bonus
+        return employee.initial_gross_salary + self.overtime_pay + self.bonus + self.local_service_tax
 
     @property
     def total_nssf_deduction(self):
@@ -107,7 +118,7 @@ class SimplePayslip:
 
     @property
     def total_statutory_deductions(self):
-        return self.employee_nssf + self.paye
+        return self.employee_nssf + self.paye + self.local_service_tax_deduction
 
     @property
     def total_non_statutory_deductions(self):

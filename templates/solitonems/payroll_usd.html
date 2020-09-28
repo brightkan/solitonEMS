@@ -88,9 +88,11 @@
         <th>Payslip ID</th>
         <th colspan="2">Name</th>
         <th>Basic Pay</th>
+        <th>Local Service Tax Allowance</th>
         <th>Gross Pay</th>
         <th>NSSF Contribution (UGX)</th>
         <th>PAYE (UGX)</th>
+        <th>Local Service Tax Deduction</th>
         <th>Sacco</th>
         <th>Net Pay</th>
         {%for payslip in usd_payslips%}
@@ -98,9 +100,11 @@
             <td>{{payslip.id}}</td>
             <td colspan="2">{{payslip.employee}}</td>
             <td>{{payslip.basic_salary| currency_filter}}</td>
+            <td>{{payslip.local_service_tax| currency_filter}}</td>
             <td>{{payslip.gross_salary| currency_filter}}</td>
             <td>{{payslip.nssf_ugx| currency_filter}}</td>
             <td>{{payslip.paye_ugx| currency_filter}}</td>
+            <td>{{payslip.local_service_tax_deduction| currency_filter}}</td>
             <td>{{payslip.sacco_deduction | currency_filter}}</td>
             <td>{{payslip.net_salary| currency_filter}}</td>
         </tr>

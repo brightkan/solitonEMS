@@ -142,9 +142,25 @@
 			<td>{{payslip.sacco_deduction | currency_filter}}</td>
 		</tr>
 		<tr class="income-values">
-			<td colspan="3" style="border: none"></td>
+			<td colspan="2">Local Service Tax Allowance</td>
+			<td>{{payslip.local_service_tax | currency_filter}}</td>
 			<td colspan="2">Employer N.S.S.F</td>
 			<td>{{payslip.employer_nssf | currency_filter}}</td>
+		</tr>
+		<tr class="income-values">
+			<td colspan="3"></td>
+			<td colspan="2">Local Service Tax Deduction</td>
+			<td>{{payslip.local_service_tax_deduction | currency_filter}}</td>
+		</tr>
+		<tr class="income-values">
+			<td colspan="3"></td>
+			<td colspan="2">Salary Advance Deduction</td>
+			<td>{{payslip.salary_advance | currency_filter}}</td>
+		</tr>
+		<tr class="income-values">
+			<td colspan="3"></td>
+			<td colspan="2">Police Fine</td>
+			<td>{{payslip.police_fine | currency_filter}}</td>
 		</tr>
 		<tr>
 			<td colspan="6"></td>
