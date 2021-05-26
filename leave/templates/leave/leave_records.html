@@ -64,6 +64,7 @@ $(document).ready(function(){
             <th>No. of Leaves</th>
             <th>Days Taken</th>
             <th>Balance</th>
+            <th>#</th>
             </thead>
             <tbody id="leave_records">
             {% for record in leave_records %}
@@ -74,6 +75,11 @@ $(document).ready(function(){
               <td>{{ record.leave_applied }}</td>
               <td>{{ record.total_taken }}</td>
               <td>{{ record.balance }}</td>
+              <td>
+                <a href="{% url 'employee_leave_details' record.leave_year %}" class="btn btn-outline-success btn-rounded waves-effect">
+                  Details
+                </a>
+              </td>
             </tr>
             {% endfor %}
             </tbody>
@@ -114,20 +120,6 @@ $(document).ready(function(){
         </div>
       </div>
     </div>
-    <!-- Modal: modalEditNewEmployee -->
-
-    {% comment %} <form method="POST" action="{% url 'add_leave_records' %}"> {% csrf_token %}
-      <div class="form-group">
-        <label for="">Leave Year:</label>
-        <select class="form-control" id="leave_yr" name="leave_yr" required>
-          {% for yr in years %}
-             <option >{{yr}}</option>       
-          {% endfor %}
-        </select>
-        
-        <button type="submit" class="btn btn-danger" > Show Records </button></a>
-      </div>
-    </form> {% endcomment %}
 
   </div>
   {% endblock content %}

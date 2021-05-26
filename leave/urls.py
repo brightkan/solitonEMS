@@ -32,6 +32,8 @@ urlpatterns = [
     path('get_no_of_days/', views.get_no_of_days, name="get_no_of_days"),
     path('leave_application_details/<int:id>/<str:role>/', views.leave_application_details,
          name="leave_application_details"),
+    path('employee_leave_details/<int:leave_year>/', views.employee_leave_details,
+         name="employee_leave_details"),
 
     path('annual_calendar/', views.Leave_planner_summary, name="annual_calendar"),
     path('leave_planner/', views.leave_planer, name="leave_planner"),

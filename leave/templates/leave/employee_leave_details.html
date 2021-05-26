@@ -1,0 +1,73 @@
+{% extends './base.html'%}
+{% load static %}
+
+{% block page_title %}Leave Application Details{% endblock %}
+
+{%block content%}
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-profile">
+
+                    <div class="card-body">
+                        <!-- Status Flash Messages -->
+                        {% if messages %}
+                        {% for msg in messages%}
+                        <div class="alert alert-{{ msg.tags }} alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                                &times;
+                            </button>
+                            {{ msg }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+
+                        <h2>{{employee}}
+                        <h3>Annual Balance: <b>{{ balance }} day(s)</b></h3>
+
+                        <h3>Leave History</h3>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <th>Apply Date</th>
+                                <th>Leave Type</th>
+                                <th>Duration</th>
+                                <th>Supervisor</th>
+                                <th>HOD</th>
+                                <th>HR</th>
+                                <th>Status</th>
+                                </thead>
+                                {% for leave_application in applications %}
+                                <tr>
+                                    <td>{{leave_application.apply_date}}</td>
+                                    <td>{{leave_application.leave_type}}</td>
+                                    <td>
+                                        {{leave_application.start_date}} - {{leave_application.end_date}}<br/>
+                                        ({{leave_application.no_of_days}} - Days)
+                                    </td>
+                                    <td>
+                                        {{leave_application.supervisor}}                                        
+                                    </td>
+                                    <td>
+                                        {{leave_application.hod}} 
+                                    </td>
+                                    <td>
+                                        {{leave_application.hr}} 
+                                    </td>
+                                    <td>
+                                        {{leave_application.overall_status}} 
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

@@ -24,10 +24,10 @@
                         {% endfor %}
                         {% endif %}
 
-                        {% if l_balance == -1%}
+                        {% if leave_balance == -1%}
                         <h2> You Don't have Leave Records for this Year</h2>
                         {% else %}
-                        <h2>Annual Balance: <b>{{ l_balance }} day(s)</b></h2>
+                        <h2>Annual Balance: <b>{{ leave_balance }} day(s)</b></h2>
                         <button class="btn btn-outline-primary" data-toggle="modal" data-target="#modal_apply_leave">
                             Apply Now
                         </button>
@@ -127,7 +127,7 @@
                         <label for="">Leave Type:</label>
                         <select class="form-control" name="ltype" id="leave_type" required>
                             <option >== Select Leave Type ==</option>
-                            {% for ty in l_types %}
+                            {% for ty in leave_types %}
                             {% if ty.leave_type == ty %}
                             <option selected>{{ty.leave_type }}</option>
                             {% else %}

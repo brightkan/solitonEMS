@@ -39,6 +39,12 @@ def get_employee_leave_applications(employee):
     return LeaveApplication.objects.filter(employee=employee)
 
 
+def get_employee_leave_details(employee, leave_year):
+    leave_applications = LeaveApplication.objects.filter(employee=employee, apply_date__year=leave_year)
+
+    return leave_applications
+
+
 def get_leave_application(leave_application_id):
     return LeaveApplication.objects.get(pk=leave_application_id)
 
